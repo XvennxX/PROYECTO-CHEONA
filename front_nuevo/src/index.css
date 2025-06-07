@@ -1,0 +1,254 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: 42, 157, 143;
+  --color-primary-light: 79, 179, 169;
+  --color-secondary: 231, 111, 81;
+  --color-accent: 244, 162, 97;
+  --color-nature-green: 38, 70, 83;
+  --color-nature-sand: 233, 196, 106;
+  --color-nature-earth: 107, 68, 35;
+  --color-nature-sky: 131, 197, 190;
+}
+
+/* Base styles */
+html {
+  font-family: 'Open Sans', system-ui, sans-serif;
+  scroll-behavior: smooth;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+}
+
+body {
+  @apply bg-neutral-50 text-text antialiased;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img {
+  content-visibility: auto;
+  contain: paint;
+}
+
+/* Calendar Styles */
+.react-datepicker {
+  @apply !font-sans !border-0 !shadow-none !bg-transparent;
+  width: 100% !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  gap: 1rem !important;
+}
+
+.react-datepicker__month-container {
+  @apply !float-none !inline-block !bg-white !rounded-xl !p-4;
+  width: calc(50% - 0.5rem) !important;
+}
+
+.react-datepicker__header {
+  @apply !bg-transparent !border-0;
+  padding: 0 !important;
+}
+
+.react-datepicker__current-month {
+  @apply !text-lg !font-semibold !text-neutral-800 !mb-4 !capitalize;
+}
+
+.react-datepicker__day-names {
+  @apply !grid !grid-cols-7 !gap-0 !mb-2;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0.5rem;
+}
+
+.react-datepicker__day-name {
+  @apply !w-10 !h-10 !flex !items-center !justify-center !m-0;
+  @apply !text-sm !font-medium !text-neutral-500 !capitalize;
+}
+
+.react-datepicker__month {
+  @apply !m-0;
+}
+
+.react-datepicker__week {
+  @apply !grid !grid-cols-7 !gap-0;
+}
+
+.react-datepicker__day {
+  @apply !w-10 !h-10 !flex !items-center !justify-center !m-0;
+  @apply !text-sm !font-medium !rounded-lg !transition-colors;
+  @apply hover:!bg-primary/10 hover:!text-primary;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--in-range {
+  @apply !bg-primary !text-white;
+  @apply hover:!bg-primary-dark hover:!text-white;
+}
+
+.react-datepicker__day--keyboard-selected {
+  @apply !bg-primary/20 !text-primary;
+}
+
+.react-datepicker__day--in-selecting-range {
+  @apply !bg-primary/20 !text-primary;
+}
+
+.react-datepicker__day--disabled {
+  @apply !text-neutral-300 !cursor-not-allowed;
+  @apply hover:!bg-transparent hover:!text-neutral-300;
+  text-decoration: line-through;
+}
+
+.react-datepicker__navigation {
+  @apply !top-4;
+}
+
+.react-datepicker__navigation--previous {
+  @apply !left-2;
+}
+
+.react-datepicker__navigation--next {
+  @apply !right-2;
+}
+
+.react-datepicker__navigation-icon::before {
+  @apply !border-neutral-400;
+}
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat', system-ui, sans-serif;
+    @apply font-semibold leading-tight text-neutral-800;
+  }
+  
+  h1 {
+    @apply text-4xl md:text-5xl mb-6;
+  }
+  
+  h2 {
+    @apply text-3xl md:text-4xl mb-5;
+  }
+  
+  h3 {
+    @apply text-2xl md:text-3xl mb-4;
+  }
+  
+  p {
+    @apply leading-relaxed mb-4 text-neutral-700;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center font-medium transition-all duration-300;
+    @apply rounded-lg shadow-md hover:shadow-lg active:shadow-sm;
+    @apply transform hover:-translate-y-0.5 active:translate-y-0;
+  }
+  
+  .btn-primary {
+    @apply bg-primary text-white hover:bg-primary-dark active:bg-primary-darker;
+    @apply hover:ring-4 hover:ring-primary/20;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary text-white hover:bg-secondary-dark active:bg-secondary-darker;
+    @apply hover:ring-4 hover:ring-secondary/20;
+  }
+  
+  .btn-outline {
+    @apply border-2 border-primary text-primary hover:bg-primary hover:text-white;
+    @apply hover:ring-4 hover:ring-primary/20;
+  }
+  
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  .card {
+    @apply bg-white rounded-3xl shadow-lg overflow-hidden;
+    @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+    @apply border border-neutral-100;
+  }
+  
+  .section {
+    @apply py-16 md:py-24;
+  }
+  
+  .input {
+    @apply w-full px-4 py-3 rounded-xl border border-neutral-200;
+    @apply bg-white;
+    @apply focus:ring-4 focus:ring-primary/20 focus:border-primary outline-none;
+    @apply transition-all duration-300;
+    @apply placeholder-neutral-400;
+  }
+  
+  .input-group {
+    @apply mb-4;
+  }
+  
+  .input-label {
+    @apply block text-sm font-medium text-neutral-700 mb-1.5;
+  }
+  
+  .error-text {
+    @apply text-error text-sm mt-1;
+  }
+  
+  .nav-link {
+    @apply px-4 py-2 rounded-full transition-all duration-300;
+    @apply hover:bg-white/10 hover:text-white;
+  }
+  
+  .nav-link-active {
+    @apply bg-white/20 text-white font-medium;
+  }
+}
+
+@layer utilities {
+  .fade-in {
+    @apply animate-fade-in;
+  }
+  
+  .slide-up {
+    @apply animate-slide-up;
+  }
+  
+  .float {
+    @apply animate-float;
+  }
+  
+  .glass-effect {
+    @apply bg-white/90 backdrop-blur-md;
+  }
+  
+  .nature-gradient {
+    @apply bg-gradient-to-r from-nature-green to-primary;
+  }
+  
+  .warm-gradient {
+    @apply bg-gradient-to-r from-secondary to-accent;
+  }
+}
+
+/* Custom animations */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
