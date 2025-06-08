@@ -7,3 +7,4 @@ class User(BaseModel):
     telefono: str
     documento_identidad: str
     password: str
+    rol: str = "client"

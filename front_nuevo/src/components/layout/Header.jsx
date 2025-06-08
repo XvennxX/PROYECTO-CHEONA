@@ -75,7 +75,7 @@ const Header = () => {
   ];
 
   // Si el usuario es admin, agregar el enlace al dashboard
-  if (user?.role === 'admin') {
+  if (user?.rol === 'admin') {
     userMenuItems.unshift({ 
       icon: <LayoutDashboard size={18} />, 
       label: 'Dashboard', 

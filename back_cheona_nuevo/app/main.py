@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import user
 from app.routes.auth_routes import router as auth_router
+from app.routes.reservation_routes import router as reservation_routes
 
 app = FastAPI()
 
@@ -20,3 +21,5 @@ def root():
     return {"message": "API de Usuarios"}
 
 app.include_router(auth_router)
+
+app.include_router(reservation_routes)

@@ -40,6 +40,8 @@ const LoginForm = ({ onClose }) => {
       login({
         name: userData.nombre, // Cambia 'name' por 'nombre'
         email: userData.email,
+        rol: userData.rol,
+        role: userData.rol,
         avatar: null // El backend no envía avatar
       });
       onClose();
