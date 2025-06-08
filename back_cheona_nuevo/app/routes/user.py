@@ -18,13 +18,13 @@ def get_user(id: int):
 def insert_user(user: User):
     hashed_pw = hash_password(user.password)
     insert_query = """
-    INSERT INTO cliente (nombre, apellido, email, telefono, documento_identidad, password)
-    VALUES (%s, %s, %s, %s, %s, %s)
+    INSERT INTO cliente (nombre, apellido, email, telefono, documento_identidad, password, rol)
+    VALUES (%s, %s, %s, %s, %s, %s, %s)
     """
     try:
         cursor.execute(insert_query, (
             user.nombre, user.apellido, user.email,
-            user.telefono, user.documento_identidad, hashed_pw
+            user.telefono, user.documento_identidad, hashed_pw, "client"
         ))
         mydb.commit()
     except Exception as err:

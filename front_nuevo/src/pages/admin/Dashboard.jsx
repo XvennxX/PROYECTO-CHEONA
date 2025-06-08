@@ -51,7 +51,7 @@ const Dashboard = () => {
   
   // Redirigir si el usuario no es admin
   React.useEffect(() => {
-    if (user?.role !== 'admin') {
+    if (user?.rol !== 'admin') {
       navigate('/');
     }
   }, [user, navigate]);

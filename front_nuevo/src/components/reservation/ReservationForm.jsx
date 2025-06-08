@@ -79,6 +79,29 @@ const ReservationForm = ({ preselectedType = 'cabin' }) => {
 
   const selectedAccommodation = accommodation[selectedType];
 
+  const handleReservation = async () => {
+  setLoading(true);
+  try {
+    const total = calculateTotal();
+    const reservationData = {
+      id_cliente: 16, // Cambia por el ID real si tienes autenticación
+      id_alojamiento: selectedType === 'cabin' ? 1 : selectedType === 'glamping' ? 2 : 3,
+      fecha_inicio: startDate.toISOString(),
+      fecha_fin: endDate.toISOString(),
+      cantidad_personas: guests,
+      metodo_pago: "efectivo", // O agrega un campo para que el usuario elija
+      observaciones: formData.specialRequests,
+      costo_total: total.total
+    };
+    await reservationService.createReservation(reservationData);
+    alert('¡Reserva realizada con éxito!');
+    // Aquí puedes limpiar el formulario o redirigir
+  } catch (error) {
+    alert(error.message || 'Error al crear la reserva');
+  }
+  setLoading(false);
+};
+
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
@@ -368,7 +391,7 @@ const ReservationForm = ({ preselectedType = 'cabin' }) => {
                 fullWidth
                 className="h-12 text-lg font-medium"
                 disabled={!startDate || !endDate || loading}
-                onClick={() => setFormStep(2)}
+                onClick={handleReservation}
               >
                 {loading ? (
                   <>
@@ -376,9 +399,11 @@ const ReservationForm = ({ preselectedType = 'cabin' }) => {
                     <span>Procesando...</span>
                   </>
                 ) : (
-                  'Continuar reserva'
+                  'Reservar'
                 )}
               </Button>
+
+              
             </div>
           </div>
         </div>
