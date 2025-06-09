@@ -178,7 +178,7 @@ const Header = () => {
                       }`}
                     >
                       <User size={20} />
-                      <span className="font-medium">{user.name}</span>
+                      <span className="font-medium">{user.nombre}</span>
                     </button>
 
                     {/* User Dropdown Menu */}
