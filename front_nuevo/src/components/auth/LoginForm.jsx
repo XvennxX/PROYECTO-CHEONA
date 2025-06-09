@@ -38,11 +38,10 @@ const LoginForm = ({ onClose }) => {
 
       const userData = await response.json();
       login({
-        name: userData.nombre, // Cambia 'name' por 'nombre'
-        email: userData.email,
-        rol: userData.rol,
-        role: userData.rol,
-        avatar: null // El backend no envía avatar
+        id_cliente: userData.user.id_cliente,
+        nombre: userData.user.nombre,
+        email: userData.user.email,
+        rol: userData.user.rol
       });
       onClose();
     } catch (err) {

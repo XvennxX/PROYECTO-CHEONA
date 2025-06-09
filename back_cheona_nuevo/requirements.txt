@@ -1,3 +1,7 @@
 fastapi
 uvicorn[standard]
 python-jose
+mysql-connector-python
+pydantic
+passlib[bcrypt]
+python-dotenv
