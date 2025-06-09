@@ -22,5 +22,18 @@ export const reservationService = {
       console.error('Error al crear la reserva:', error);
       throw error;
     }
+  },
+  async getRoom(id) {
+    // Buscar en el mock
+    return rooms.find(r => r.id === id);
+  },
+  async updateRoom(id, data) {
+    // Simulación: actualiza el objeto en el mock (solo para frontend dev)
+    const idx = rooms.findIndex(r => r.id === id);
+    if (idx !== -1) {
+      rooms[idx] = { ...rooms[idx], ...data };
+      return rooms[idx];
+    }
+    throw new Error('Alojamiento no encontrado');
   }
 };
