@@ -603,6 +603,7 @@ const Dashboard = () => {
                   size="sm"
                   fullWidth
                   icon={<Edit2 size={16} />}
+                  onClick={() => navigate(`/admin/espacios/${space.id}/editar`)}
                 >
                   Editar
                 </Button>
