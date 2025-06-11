@@ -16,10 +16,7 @@ class ReservationUpdate(BaseModel):
     fecha_inicio: Optional[date]
     fecha_fin: Optional[date]
     cantidad_personas: Optional[int]
-    metodo_pago: Optional[str]
-    observaciones: Optional[str]
-    estado: Optional[str]
-    costo_total: Optional[float]
+   
 
 class ReservationResponse(BaseModel):
     id_reserva: int

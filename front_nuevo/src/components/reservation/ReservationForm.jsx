@@ -6,10 +6,12 @@ import { reservationService } from '../../services/reservationService';
 import Button from '../ui/Button';
 import { Home, Tent, Castle, ChevronLeft, ChevronRight, Users, Check, Calendar, Loader } from 'lucide-react';
 import "react-datepicker/dist/react-datepicker.css";
+import { useAuth } from '../auth/AuthContext';
 
 registerLocale('es', es);
 
 const ReservationForm = ({ preselectedType = 'cabin' }) => {
+  const { user } = useAuth();
   const [selectedType, setSelectedType] = useState(preselectedType);
   const [dateRange, setDateRange] = useState([null, null]);
   const [startDate, endDate] = dateRange;
@@ -24,6 +26,9 @@ const ReservationForm = ({ preselectedType = 'cabin' }) => {
     phone: '',
     specialRequests: '',
   });
+
+  // Estado para los rangos reservados
+  const [reservedRanges, setReservedRanges] = useState([]);
 
   const accommodation = {
     cabin: {
@@ -79,28 +84,62 @@ const ReservationForm = ({ preselectedType = 'cabin' }) => {
 
   const selectedAccommodation = accommodation[selectedType];
 
-  const handleReservation = async () => {
-  setLoading(true);
-  try {
-    const total = calculateTotal();
-    const reservationData = {
-      id_cliente: 16, // Cambia por el ID real si tienes autenticación
-      id_alojamiento: selectedType === 'cabin' ? 1 : selectedType === 'glamping' ? 2 : 3,
-      fecha_inicio: startDate.toISOString(),
-      fecha_fin: endDate.toISOString(),
-      cantidad_personas: guests,
-      metodo_pago: "efectivo", // O agrega un campo para que el usuario elija
-      observaciones: formData.specialRequests,
-      costo_total: total.total
+  // Cargar fechas reservadas al cambiar el tipo de alojamiento
+  useEffect(() => {
+    const fetchReservedDates = async () => {
+      try {
+        const idAlojamiento = selectedType === 'cabin' ? 1 : selectedType === 'glamping' ? 2 : 3;
+        const data = await reservationService.getReservedDates(idAlojamiento);
+        setReservedRanges(data);
+      } catch (e) {
+        setReservedRanges([]);
+      }
     };
-    await reservationService.createReservation(reservationData);
-    alert('¡Reserva realizada con éxito!');
-    // Aquí puedes limpiar el formulario o redirigir
-  } catch (error) {
-    alert(error.message || 'Error al crear la reserva');
+    fetchReservedDates();
+  }, [selectedType]);
+
+  // Utilidad para convertir rangos a fechas individuales
+  function getAllReservedDays(ranges) {
+    const days = [];
+    ranges.forEach(({ start, end }) => {
+      let current = new Date(start);
+      const last = new Date(end);
+      while (current <= last) {
+        days.push(new Date(current));
+        current.setDate(current.getDate() + 1);
+      }
+    });
+    return days;
   }
-  setLoading(false);
-};
+  const reservedDays = getAllReservedDays(reservedRanges);
+
+  const handleReservation = async () => {
+    setLoading(true);
+    try {
+      const total = calculateTotal();
+      if (!user || !user.id_cliente) {
+        alert('Debes iniciar sesión para reservar.');
+        setLoading(false);
+        return;
+      }
+      const reservationData = {
+        id_cliente: user.id_cliente, // Usar el ID real del usuario autenticado
+        id_alojamiento: selectedType === 'cabin' ? 1 : selectedType === 'glamping' ? 2 : 3,
+        fecha_inicio: startDate.toISOString(),
+        fecha_fin: endDate.toISOString(),
+        cantidad_personas: guests,
+        metodo_pago: "efectivo", // O agrega un campo para que el usuario elija
+        observaciones: formData.specialRequests,
+        costo_total: total.total
+      };
+      await reservationService.createReservation(reservationData);
+      alert('¡Reserva realizada con éxito!');
+      // Aquí puedes limpiar el formulario o redirigir
+    } catch (error) {
+      alert(error.message || 'Error al crear la reserva');
+    }
+    setLoading(false);
+  };
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('es-CO', {
@@ -280,6 +319,7 @@ const ReservationForm = ({ preselectedType = 'cabin' }) => {
                   isSameDay(date, new Date()) ? 'font-bold' : ''
                 }`
               }
+              excludeDates={reservedDays}
             />
 
             <div className="mt-8 space-y-6">

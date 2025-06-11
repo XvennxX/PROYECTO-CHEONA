@@ -45,16 +45,16 @@ def check_availability(id_alojamiento: int, fecha_inicio, fecha_fin) -> bool:
 
 def get_user_reservations(id_cliente: int) -> List[ReservationResponse]:
     query = """
-        SELECT * FROM reserva WHERE id_cliente = %s ORDER BY fecha_reserva DESC
+        SELECT * FROM reservas WHERE id_cliente = %s ORDER BY fecha_reserva DESC
     """
     cursor.execute(query, (id_cliente,))
     results = cursor.fetchall()
     if not results:
-        raise HTTPException(status_code=404, detail="No se encontraron reservas para este usuario")
+        return []  # No lanzar 404, solo retornar lista vacía
     return [ReservationResponse(**dict(zip(cursor.column_names, row))) for row in results]
 
 def get_all_reservations() -> List[ReservationResponse]:
-    query = "SELECT * FROM reserva ORDER BY fecha_reserva DESC"
+    query = "SELECT * FROM reservas ORDER BY fecha_reserva DESC"
     cursor.execute(query)
     results = cursor.fetchall()
     return [ReservationResponse(**dict(zip(cursor.column_names, row))) for row in results]
@@ -69,7 +69,7 @@ def update_reservation(id_reserva: int, data: ReservationUpdate):
     if not fields:
         raise HTTPException(status_code=400, detail="No hay datos para actualizar")
     
-    update_query = f"UPDATE reserva SET {', '.join(fields)} WHERE id_reserva = %s"
+    update_query = f"UPDATE reservas SET {', '.join(fields)} WHERE id_reserva = %s"
     values.append(id_reserva)
 
     try:
@@ -83,7 +83,7 @@ def update_reservation(id_reserva: int, data: ReservationUpdate):
 
 def cancel_reservation(id_reserva: int):
     # En lugar de borrar, se cambia estado a 'cancelada'
-    query = "UPDATE reserva SET estado = 'cancelada' WHERE id_reserva = %s"
+    query = "UPDATE reservas SET estado = 'cancelada' WHERE id_reserva = %s"
     try:
         cursor.execute(query, (id_reserva,))
         mydb.commit()
@@ -94,7 +94,7 @@ def cancel_reservation(id_reserva: int):
         raise HTTPException(status_code=400, detail=f"Error al cancelar la reserva: {e}")
 
 def get_reservation_details(id_reserva: int) -> ReservationResponse:
-    query = "SELECT * FROM reserva WHERE id_reserva = %s"
+    query = "SELECT * FROM reservas WHERE id_reserva = %s"
     cursor.execute(query, (id_reserva,))
     result = cursor.fetchone()
     if not result:
@@ -102,7 +102,7 @@ def get_reservation_details(id_reserva: int) -> ReservationResponse:
     return ReservationResponse(**dict(zip(cursor.column_names, result)))
 
 def confirm_reservation_payment(id_reserva: int):
-    query = "UPDATE reserva SET pago_confirmado = TRUE, estado = 'confirmada' WHERE id_reserva = %s"
+    query = "UPDATE reservas SET pago_confirmado = TRUE, estado = 'confirmada' WHERE id_reserva = %s"
     try:
         cursor.execute(query, (id_reserva,))
         mydb.commit()
@@ -111,3 +111,31 @@ def confirm_reservation_payment(id_reserva: int):
         return {"message": "Pago confirmado y reserva actualizada"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error al confirmar pago: {e}")
+
+def get_reserved_dates(id_alojamiento: int):
+    """
+    Devuelve una lista de rangos de fechas reservadas para un alojamiento.
+    """
+    query = """
+        SELECT fecha_inicio, fecha_fin FROM reservas
+        WHERE id_alojamiento = %s AND estado IN ('pendiente', 'confirmada')
+    """
+    cursor.execute(query, (id_alojamiento,))
+    results = cursor.fetchall()
+    # Devuelve una lista de rangos de fechas reservadas
+    return [
+        {"start": row[0].isoformat(), "end": row[1].isoformat()}
+        for row in results
+    ]
+
+def get_all_reservations_with_client() -> list:
+    query = '''
+        SELECT r.*, c.nombre, c.apellido, c.email
+        FROM reservas r
+        JOIN cliente c ON r.id_cliente = c.id_cliente
+        ORDER BY r.fecha_reserva DESC
+    '''
+    cursor.execute(query)
+    results = cursor.fetchall()
+    columns = [col[0] for col in cursor.description]
+    return [dict(zip(columns, row)) for row in results]
