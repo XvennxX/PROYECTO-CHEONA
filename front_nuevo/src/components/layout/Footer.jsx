@@ -66,24 +66,26 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-center text-white/90">
                 <span className="material-icons-outlined mr-2">📍</span>
-                San José, Costa Rica
-              </li>
-              <li>
-                <a 
-                  href="tel:+12345678890" 
-                  className="flex items-center text-white/90 hover:text-accent transition-colors"
-                >
-                  <span className="material-icons-outlined mr-2">📞</span>
-                  +1 234 567 890
+                <a href="https://maps.app.goo.gl/ruc7fyrHWkiMrenP9" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">
+                  Puente Santa Ana, Sasaima-Alban, Taboga, Sasaima, Cundinamarca
                 </a>
               </li>
               <li>
                 <a 
-                  href="mailto:info@fincacheona.com" 
+                  href="tel:+573222108528" 
+                  className="flex items-center text-white/90 hover:text-accent transition-colors"
+                >
+                  <span className="material-icons-outlined mr-2">📞</span>
+                  +57 322 210 8528
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="mailto:cheona_redes@hotmail.com" 
                   className="flex items-center text-white/90 hover:text-accent transition-colors"
                 >
                   <span className="material-icons-outlined mr-2">📧</span>
-                  info@fincacheona.com
+                  cheona_redes@hotmail.com
                 </a>
               </li>
             </ul>

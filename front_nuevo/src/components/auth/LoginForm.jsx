@@ -37,12 +37,24 @@ const LoginForm = ({ onClose }) => {
       }
 
       const userData = await response.json();
+      // Guardar token y expiración
+      console.log('userData login:', userData);
+      // Si no viene expires_in, usar 3600 segundos por defecto
+      const expiresIn = userData.expires_in || 3600;
+      // Guardar el objeto userData completo en localStorage para depuración
+      localStorage.setItem('userDataRaw', JSON.stringify(userData));
+      // Guardar solo los datos del usuario en userData (como espera el contexto)
       login({
         id_cliente: userData.user.id_cliente,
         nombre: userData.user.nombre,
+        apellido: userData.user.apellido,
         email: userData.user.email,
+        telefono: userData.user.telefono,
+        documento_identidad: userData.user.documento_identidad,
         rol: userData.user.rol
-      });
+      }, userData.access_token, expiresIn);
+      // Confirmación visual
+      alert('Login exitoso. Usuario guardado en localStorage.');
       onClose();
     } catch (err) {
       setError('Email o contraseña incorrectos');

@@ -7,7 +7,10 @@ class LoginRequest(BaseModel):
 class UserResponse(BaseModel):
     id_cliente: int
     nombre: str
+    apellido: str
     email: str
+    telefono: str
+    documento_identidad: str
     rol: str
 
 class LoginResponse(BaseModel):

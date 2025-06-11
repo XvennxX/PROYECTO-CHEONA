@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../components/auth/AuthContext';
 import { 
@@ -42,12 +42,17 @@ import {
   ResponsiveContainer
 } from 'recharts';
 import Button from '../../components/ui/Button';
+import { reservationService } from '../../services/reservationService';
 
 const Dashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [selectedDateRange, setSelectedDateRange] = useState('week');
+  const [activeReservations, setActiveReservations] = useState([]);
+  const [futureReservations, setFutureReservations] = useState([]); // NUEVO estado
+  const [showActiveModal, setShowActiveModal] = useState(false);
+  const [loadingActive, setLoadingActive] = useState(false);
   
   // Redirigir si el usuario no es admin
   React.useEffect(() => {
@@ -55,6 +60,40 @@ const Dashboard = () => {
       navigate('/');
     }
   }, [user, navigate]);
+
+  // Obtener reservas activas y futuras al cargar el dashboard
+  useEffect(() => {
+    const fetchReservations = async () => {
+      setLoadingActive(true);
+      try {
+        // Traer todas las reservas con datos de cliente
+        const all = await reservationService.getAllReservationsWithClient();
+        const today = new Date();
+        today.setHours(0,0,0,0); // Ignorar hora
+        // Activas: fecha_inicio <= hoy <= fecha_fin y no cancelada
+        const active = all.filter(r => {
+          const start = new Date(r.fecha_inicio);
+          const end = new Date(r.fecha_fin);
+          start.setHours(0,0,0,0);
+          end.setHours(0,0,0,0);
+          return start <= today && end >= today && r.estado !== 'cancelada';
+        });
+        setActiveReservations(active);
+        // Futuras: fecha_inicio > hoy y no cancelada
+        const future = all.filter(r => {
+          const start = new Date(r.fecha_inicio);
+          start.setHours(0,0,0,0);
+          return start > today && r.estado !== 'cancelada';
+        });
+        setFutureReservations(future);
+      } catch (e) {
+        setActiveReservations([]);
+        setFutureReservations([]);
+      }
+      setLoadingActive(false);
+    };
+    fetchReservations();
+  }, []);
 
   // Datos de ejemplo
   const monthlyReservations = [
@@ -108,33 +147,6 @@ const Dashboard = () => {
       registeredDate: "2025-03-13",
       reservations: 2,
       status: "inactive"
-    }
-  ];
-
-  const upcomingReservations = [
-    {
-      id: 1,
-      client: "María Rodríguez",
-      accommodation: "Cabaña El Roble",
-      dates: "27-29 Mayo",
-      status: "paid",
-      amount: "1.200.000"
-    },
-    {
-      id: 2,
-      client: "Juan Pérez",
-      accommodation: "Domo Celestial",
-      dates: "1-3 Junio",
-      status: "pending",
-      amount: "800.000"
-    },
-    {
-      id: 3,
-      client: "Ana García",
-      accommodation: "Cabaña El Valle",
-      dates: "5-7 Junio",
-      status: "confirmed",
-      amount: "950.000"
     }
   ];
 
@@ -196,18 +208,27 @@ const Dashboard = () => {
     }).format(value);
   };
 
+  // Utilidad para formatear fechas a 'YYYY-MM-DD' (útil para cualquier PATCH de reservas)
+  const toYYYYMMDD = (d) => {
+    if (!d) return undefined;
+    if (typeof d === 'string' && d.length === 10) return d;
+    if (typeof d === 'string') return d.slice(0, 10);
+    if (d instanceof Date) return d.toISOString().slice(0, 10);
+    return undefined;
+  };
+
   const renderOverviewTab = () => (
     <>
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-2xl p-6 shadow-lg">
+        <div className="bg-white rounded-2xl p-6 shadow-lg cursor-pointer" onClick={() => setShowActiveModal(true)}>
           <div className="flex items-center gap-4">
             <div className="bg-primary/10 p-3 rounded-xl">
               <Calendar className="w-8 h-8 text-primary" />
             </div>
             <div>
               <h3 className="text-sm text-neutral-600">Reservas Activas</h3>
-              <p className="text-2xl font-bold">24</p>
+              <p className="text-2xl font-bold">{loadingActive ? '...' : activeReservations.length}</p>
             </div>
           </div>
         </div>
@@ -358,41 +379,49 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {upcomingReservations.map((reservation) => (
-                  <tr key={reservation.id} className="border-b border-neutral-100 hover:bg-neutral-50">
-                    <td className="py-3 px-4">{reservation.client}</td>
-                    <td className="py-3 px-4">{reservation.accommodation}</td>
-                    <td className="py-3 px-4">{reservation.dates}</td>
-                    <td className="py-3 px-4">${reservation.amount}</td>
-                    <td className="py-3 px-4">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        reservation.status === 'paid' 
-                          ? 'bg-green-100 text-green-800'
-                          : reservation.status === 'pending'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-blue-100 text-blue-800'
-                      }`}>
-                        {reservation.status === 'paid' ? 'Pagado' : 
-                         reservation.status === 'pending' ? 'Pendiente' : 'Confirmado'}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm" icon={<Edit2 size={16} />}>
-                          Editar
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          className="text-red-600 hover:bg-red-50"
-                          icon={<Trash2 size={16} />}
-                        >
-                          Cancelar
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {futureReservations.length === 0 ? (
+                  <tr><td colSpan={6} className="text-center py-6 text-neutral-500">No hay próximas reservas.</td></tr>
+                ) : (
+                  futureReservations.map((reservation) => (
+                    <tr key={reservation.id_reserva} className="border-b border-neutral-100 hover:bg-neutral-50">
+                      <td className="py-3 px-4">{`${reservation.nombre} ${reservation.apellido}`}</td>
+                      <td className="py-3 px-4">{reservation.alojamiento_nombre || '-'}</td>
+                      <td className="py-3 px-4">{`${reservation.fecha_inicio} - ${reservation.fecha_fin}`}</td>
+                      <td className="py-3 px-4">{reservation.costo_total ? formatCurrency(reservation.costo_total) : '-'}</td>
+                      <td className="py-3 px-4">
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          reservation.estado === 'pagada' || reservation.estado === 'paid'
+                            ? 'bg-green-100 text-green-800'
+                            : reservation.estado === 'pendiente' || reservation.estado === 'pending'
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : 'bg-blue-100 text-blue-800'
+                        }`}>
+                          {reservation.estado === 'pagada' || reservation.estado === 'paid'
+                            ? 'Pagado'
+                            : reservation.estado === 'pendiente' || reservation.estado === 'pending'
+                            ? 'Pendiente'
+                            : 'Confirmado'}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="flex gap-2">
+                          <Button variant="outline" size="sm" icon={<Edit2 size={16} />}>Editar</Button>
+                          <Button variant="outline" size="sm" className="text-red-600 hover:bg-red-50" icon={<Trash2 size={16} />}>Cancelar</Button>
+                          {!(reservation.estado === 'pagada' || reservation.estado === 'paid') && (
+                            <Button 
+                              variant="primary" 
+                              size="sm" 
+                              className="text-white bg-green-600 hover:bg-green-700"
+                              onClick={() => handleConfirmPayment(reservation.id_reserva)}
+                            >
+                              Confirmar pago
+                            </Button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -428,6 +457,53 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal de Reservas Activas */}
+      {showActiveModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-3xl p-8 relative">
+            <button
+              className="absolute top-4 right-4 text-neutral-500 hover:text-primary text-2xl"
+              onClick={() => setShowActiveModal(false)}
+            >
+              ×
+            </button>
+            <h2 className="text-2xl font-bold mb-6">Reservas Activas</h2>
+            {loadingActive ? (
+              <div className="text-center py-8">Cargando...</div>
+            ) : activeReservations.length === 0 ? (
+              <div className="text-center py-8 text-neutral-500">No hay reservas activas.</div>
+            ) : (
+              <div className="overflow-x-auto max-h-[60vh]">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-neutral-200">
+                      <th className="text-left py-3 px-4">Cliente</th>
+                      <th className="text-left py-3 px-4">Alojamiento</th>
+                      <th className="text-left py-3 px-4">Fecha inicio</th>
+                      <th className="text-left py-3 px-4">Fecha fin</th>
+                      <th className="text-left py-3 px-4">Estado</th>
+                      <th className="text-left py-3 px-4">Monto</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {activeReservations.map((r) => (
+                      <tr key={r.id_reserva} className="border-b border-neutral-100 hover:bg-neutral-50">
+                        <td className="py-3 px-4">{`${r.nombre} ${r.apellido}`}</td>
+                        <td className="py-3 px-4">{r.alojamiento_nombre || '-'}</td>
+                        <td className="py-3 px-4">{r.fecha_inicio}</td>
+                        <td className="py-3 px-4">{r.fecha_fin}</td>
+                        <td className="py-3 px-4">{r.estado}</td>
+                        <td className="py-3 px-4">{r.costo_total ? formatCurrency(r.costo_total) : '-'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </>
   );
 
@@ -494,11 +570,11 @@ const Dashboard = () => {
                   <td className="py-3 px-4">{user.reservations}</td>
                   <td className="py-3 px-4">
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      user.status === 'active' 
+                      user.estado === 'activo'
                         ? 'bg-green-100 text-green-800'
                         : 'bg-red-100 text-red-800'
                     }`}>
-                      {user.status === 'active' ? 'Activo' : 'Inactivo'}
+                      {user.estado === 'activo' ? 'Activo' : 'Inactivo'}
                     </span>
                   </td>
                   <td className="py-3 px-4">
@@ -763,6 +839,27 @@ const Dashboard = () => {
       </div>
     </div>
   );
+
+  // --- FUNCIÓN PARA CONFIRMAR PAGO ---
+  const handleConfirmPayment = async (id_reserva) => {
+    if (!window.confirm('¿Confirmar el pago de esta reserva?')) return;
+    try {
+      await reservationService.confirmPayment(id_reserva);
+      // Refrescar la lista de reservas futuras
+      const all = await reservationService.getAllReservationsWithClient();
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      const future = all.filter(r => {
+        const start = new Date(r.fecha_inicio);
+        start.setHours(0,0,0,0);
+        return start > today && r.estado !== 'cancelada';
+      });
+      setFutureReservations(future);
+      alert('Pago confirmado correctamente.');
+    } catch (e) {
+      alert('No se pudo confirmar el pago.');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-neutral-50 pt-20">

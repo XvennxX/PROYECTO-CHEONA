@@ -4,21 +4,52 @@ import { Camera, Mail, Phone, MapPin, Calendar, Edit2, Save, X } from 'lucide-re
 import Button from '../../components/ui/Button';
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, login } = useAuth(); // Agregamos login del contexto
+  console.log('user:', user);
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
-    name: user?.name || '',
+    nombre: user?.nombre || '',
+    apellido: user?.apellido || '',
     email: user?.email || '',
-    phone: '+57 300 123 4567',
+    telefono: user?.telefono || '',
+    documento_identidad: user?.documento_identidad || '',
     location: 'Bogotá, Colombia',
     bio: 'Amante de la naturaleza y los viajes.',
     joinDate: 'Marzo 2025',
     totalReservations: 5
   });
 
-  const handleSave = () => {
-    setIsEditing(false);
-    // Aquí iría la lógica para guardar los cambios
+  const handleSave = async () => {
+    try {
+      // Construir el objeto solo con los campos editables
+      const updatedUser = {
+        nombre: profileData.nombre,
+        apellido: profileData.apellido,
+        email: profileData.email,
+        telefono: profileData.telefono,
+        documento_identidad: profileData.documento_identidad,
+        rol: user?.rol || 'client'
+      };
+      // Si el usuario está cambiando la contraseña, agregarla aquí (puedes agregar un campo extra en el formulario si lo deseas)
+      // if (profileData.password) updatedUser.password = profileData.password;
+
+      const response = await fetch(`http://localhost:8000/usuarios/${user.id_cliente}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedUser)
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.detail || 'Error al actualizar el perfil');
+      }
+      // Actualizar el contexto y localStorage con los nuevos datos
+      const newUserData = { ...user, ...updatedUser };
+      login(newUserData, localStorage.getItem('token'), Number(localStorage.getItem('tokenExp')) - Math.floor(Date.now() / 1000));
+      alert('Perfil actualizado correctamente');
+      setIsEditing(false);
+    } catch (error) {
+      alert(error.message || 'Error al actualizar el perfil');
+    }
   };
 
   return (
@@ -41,7 +72,26 @@ const Profile = () => {
 
             <div className="flex-1">
               <div className="flex items-center justify-between mb-2">
-                <h1 className="text-2xl font-bold">{profileData.name}</h1>
+                {isEditing ? (
+                  <div className="flex flex-col md:flex-row gap-2 w-full">
+                    <input
+                      type="text"
+                      value={profileData.nombre}
+                      onChange={(e) => setProfileData({ ...profileData, nombre: e.target.value })}
+                      className="input h-8 text-sm w-full md:w-auto"
+                      placeholder="Nombre"
+                    />
+                    <input
+                      type="text"
+                      value={profileData.apellido}
+                      onChange={(e) => setProfileData({ ...profileData, apellido: e.target.value })}
+                      className="input h-8 text-sm w-full md:w-auto"
+                      placeholder="Apellido"
+                    />
+                  </div>
+                ) : (
+                  <h1 className="text-2xl font-bold">{profileData.nombre} {profileData.apellido}</h1>
+                )}
                 {!isEditing ? (
                   <Button
                     variant="outline"
@@ -92,12 +142,25 @@ const Profile = () => {
                   {isEditing ? (
                     <input
                       type="tel"
-                      value={profileData.phone}
-                      onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
+                      value={profileData.telefono}
+                      onChange={(e) => setProfileData({ ...profileData, telefono: e.target.value })}
                       className="input h-8 text-sm"
                     />
                   ) : (
-                    profileData.phone
+                    profileData.telefono
+                  )}
+                </div>
+                <div className="flex items-center text-neutral-600">
+                  <span className="mr-2 font-semibold">Documento:</span>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={profileData.documento_identidad}
+                      onChange={(e) => setProfileData({ ...profileData, documento_identidad: e.target.value })}
+                      className="input h-8 text-sm"
+                    />
+                  ) : (
+                    profileData.documento_identidad
                   )}
                 </div>
                 <div className="flex items-center text-neutral-600">

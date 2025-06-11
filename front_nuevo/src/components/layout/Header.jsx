@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, TreePine, User, LogOut, Calendar, HelpCircle, Settings, LayoutDashboard, Bell } from 'lucide-react';
 import AuthModal from '../auth/AuthModal';
 import Button from '../ui/Button';
@@ -7,6 +7,7 @@ import { useAuth } from '../auth/AuthContext';
 
 const Header = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -54,6 +55,7 @@ const Header = () => {
     logout();
     setIsUserMenuOpen(false);
     setIsMenuOpen(false);
+    navigate('/'); // Redirigir al inicio después de cerrar sesión
   };
 
   const isActive = (path) => {
