@@ -97,18 +97,20 @@ const Testimonials = () => {
               <div className="space-y-6">
                 <div className="flex items-center">
                   <MapPin className="text-primary w-6 h-6 mr-4" />
-                  <span>San José, Costa Rica</span>
+                  <a href="https://maps.app.goo.gl/ruc7fyrHWkiMrenP9" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                    Puente Santa Ana, Sasaima-Alban, Taboga, Sasaima, Cundinamarca
+                  </a>
                 </div>
                 <div className="flex items-center">
                   <Phone className="text-primary w-6 h-6 mr-4" />
-                  <a href="tel:+12345678890" className="hover:text-primary transition-colors">
-                    +1 234 567 890
+                  <a href="tel:+573222108528" className="hover:text-primary transition-colors">
+                    +57 322 210 8528
                   </a>
                 </div>
                 <div className="flex items-center">
                   <Mail className="text-primary w-6 h-6 mr-4" />
-                  <a href="mailto:info@fincacheona.com" className="hover:text-primary transition-colors">
-                    info@fincacheona.com
+                  <a href="mailto:cheona_redes@hotmail.com" className="hover:text-primary transition-colors">
+                    cheona_redes@hotmail.com
                   </a>
                 </div>
               </div>

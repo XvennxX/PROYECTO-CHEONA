@@ -23,7 +23,9 @@ const Settings = () => {
     if (!window.confirm('¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.')) return;
     setDeleting(true);
     try {
-      const res = await fetch('http://localhost:8000/usuarios/delete', {
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      const userId = userData?.id_cliente;
+      const res = await fetch(`http://localhost:8000/usuarios/${userId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${userToken}`,

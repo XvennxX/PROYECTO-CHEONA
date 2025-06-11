@@ -38,3 +38,11 @@ def get_reservation_details_endpoint(id_reserva: int):
 @router.post("/reservas/{id_reserva}/confirmar-pago")
 def confirm_reservation_payment_endpoint(id_reserva: int):
     return confirm_reservation_payment(id_reserva)
+
+@router.get("/alojamientos/{id_alojamiento}/fechas-reservadas")
+def fechas_reservadas(id_alojamiento: int):
+    return get_reserved_dates(id_alojamiento)
+
+@router.get("/reservas/admin/full")
+def get_all_reservations_with_client_endpoint():
+    return get_all_reservations_with_client()

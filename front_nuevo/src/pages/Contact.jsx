@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import SectionTitle from '../components/ui/SectionTitle';
 import Button from '../components/ui/Button';
 import { contactService } from '../services/contactService';
+import { chatService } from '../services/chatService';
 import { Check, MapPin, Phone, Mail, Clock, Loader, AlertCircle } from 'lucide-react';
 
 const Contact = () => {
@@ -36,21 +37,35 @@ const Contact = () => {
     setError(null);
     
     try {
-      const response = await contactService.sendContactForm(formData);
-      
-      if (response) {
-        setSuccess(true);
-        setFormData({
-          name: '',
-          email: '',
-          subject: '',
-          message: ''
-        });
-      } else {
-        throw new Error('No se pudo enviar el formulario');
+      const user = JSON.parse(localStorage.getItem('userData'));
+      if (!user || !user.id_cliente) {
+        setError('Debes iniciar sesión para enviar un mensaje al chat.');
+        setIsSubmitting(false);
+        return;
       }
+      let id_usuario_cliente = user.id_cliente;
+      console.log('user:', user);
+      console.log('id_usuario_cliente:', id_usuario_cliente);
+      // 1. Crear conversación (si no existe)
+      const id_conversacion = await chatService.crearConversacion(id_usuario_cliente);
+      console.log('id_conversacion:', id_conversacion);
+      // 2. Enviar mensaje inicial
+      const resp = await chatService.enviarMensaje({
+        id_conversacion,
+        remitente: 'cliente',
+        mensaje: formData.message
+      });
+      console.log('respuesta enviarMensaje:', resp);
+      setSuccess(true);
+      setFormData({
+        name: '',
+        email: '',
+        subject: '',
+        message: ''
+      });
     } catch (err) {
-      setError('Error al enviar el mensaje. Por favor, inténtalo de nuevo.');
+      setError('No se pudo enviar el mensaje.');
+      console.error('Error en envío de mensaje:', err);
     } finally {
       setIsSubmitting(false);
     }

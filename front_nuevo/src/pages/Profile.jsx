@@ -4,7 +4,7 @@ import { Camera, Mail, Phone, MapPin, Calendar, Edit2, Save, X, CreditCard, Bell
 import Button from '../components/ui/Button';
 
 const Profile = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, token } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
     name: user?.name || '',
@@ -15,10 +15,49 @@ const Profile = () => {
     joinDate: 'Marzo 2025',
     totalReservations: 5
   });
+  const [deleting, setDeleting] = useState(false);
 
   const handleSave = () => {
     setIsEditing(false);
     // Aquí iría la lógica para guardar los cambios
+  };
+
+  const handleDeleteAccount = async () => {
+    const userToken = token || localStorage.getItem('token');
+    if (!userToken) {
+      alert('No hay sesión activa. Por favor inicia sesión de nuevo.');
+      return;
+    }
+    if (!window.confirm('¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.')) return;
+    setDeleting(true);
+    try {
+      const res = await fetch(`http://localhost:8000/usuarios/${user.id_cliente}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${userToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      let data = null;
+      const text = await res.text();
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch (e) {
+        data = {};
+      }
+      if (res.ok) {
+        alert('Cuenta eliminada exitosamente');
+        localStorage.removeItem('token');
+        logout();
+      } else {
+        alert((data && data.detail) || 'Error al eliminar la cuenta');
+      }
+    } catch (err) {
+      alert('Error de red o del servidor: ' + err.message);
+      console.error(err);
+    } finally {
+      setDeleting(false);
+    }
   };
 
   return (
@@ -268,8 +307,10 @@ const Profile = () => {
                   fullWidth
                   className="justify-start h-12 text-red-600 hover:bg-red-50"
                   icon={<Trash2 size={18} />}
+                  onClick={handleDeleteAccount}
+                  disabled={deleting}
                 >
-                  Eliminar cuenta
+                  {deleting ? 'Eliminando...' : 'Eliminar cuenta'}
                 </Button>
               </div>
             </div>

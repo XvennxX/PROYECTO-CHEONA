@@ -1,7 +1,11 @@
 import React from 'react';
 import { Bell, Calendar, DollarSign, AlertCircle } from 'lucide-react';
+import ChatNotifications from '../../components/user/ChatNotifications';
+import { useAuth } from '../../components/auth/AuthContext';
 
 const Notifications = () => {
+  const { user } = useAuth();
+
   const notifications = [
     {
       id: 1,
@@ -32,7 +36,8 @@ const Notifications = () => {
         <div className="bg-white rounded-2xl p-8 shadow-lg">
           <h1 className="text-2xl font-bold mb-6">Notificaciones</h1>
           
-          <div className="space-y-4">
+          {/* Notificaciones antiguas... */}
+          <div className="space-y-4 mb-8">
             {notifications.map((notification) => (
               <div 
                 key={notification.id} 
@@ -71,6 +76,9 @@ const Notifications = () => {
               </div>
             ))}
           </div>
+
+          {/* Notificaciones de chat */}
+          <ChatNotifications user={user} />
         </div>
       </div>
     </div>
