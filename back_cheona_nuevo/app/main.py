@@ -4,6 +4,9 @@ from app.routes import user
 from app.routes.auth_routes import router as auth_router
 from app.routes.reservation_routes import router as reservation_routes
 from app.routes.mensaje_routes import router as mensaje_router
+from app.routes import alojamiento_routes
+
+
 
 
 app = FastAPI()
@@ -28,5 +31,4 @@ app.include_router(reservation_routes)
 
 app.include_router(mensaje_router)
 
-
-
+app.include_router(alojamiento_routes.router)

@@ -4,6 +4,7 @@ import { Menu, X, TreePine, User, LogOut, Calendar, HelpCircle, Settings, Layout
 import AuthModal from '../auth/AuthModal';
 import Button from '../ui/Button';
 import { useAuth } from '../auth/AuthContext';
+import { chatService } from '../../services/chatService';
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -13,6 +14,7 @@ const Header = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalView, setAuthModalView] = useState('login');
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
   const location = useLocation();
 
   useEffect(() => {
@@ -34,6 +36,23 @@ const Header = () => {
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
   }, [isUserMenuOpen]);
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchData = () => {
+      // Solo pasar id_usuario_cliente si es cliente
+      const isAdmin = user.rol === 'admin';
+      chatService.listarConversaciones(isAdmin ? null : user.id_cliente, user.rol)
+        .then(data => {
+          // Sumar solo los no_leidos de las conversaciones que le corresponden
+          const count = data.reduce((acc, conv) => acc + (conv.no_leidos || 0), 0);
+          setUnreadNotifications(count);
+        });
+    };
+    fetchData();
+    const interval = setInterval(fetchData, 5000); // Actualiza cada 5 segundos
+    return () => clearInterval(interval);
+  }, [user]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -88,9 +107,6 @@ const Header = () => {
   // Lista de rutas que deben tener header transparente
   const transparentHeaderPaths = ['/', '/reservar', '/servicios', '/como-llegar'];
   const shouldBeTransparent = transparentHeaderPaths.includes(location.pathname);
-
-  // Número de notificaciones no leídas (ejemplo)
-  const unreadNotifications = 3;
 
   return (
     <>

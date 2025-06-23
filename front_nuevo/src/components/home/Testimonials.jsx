@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import SectionTitle from '../ui/SectionTitle';
 import { Star, MapPin, Phone, Mail, Loader } from 'lucide-react';
+import { chatService } from '../../services/chatService';
 
 const Testimonials = () => {
   const [formData, setFormData] = useState({
@@ -13,10 +14,28 @@ const Testimonials = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    // Simular envío
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      // Aquí deberías obtener el usuario autenticado, por ejemplo desde localStorage
+      const user = JSON.parse(localStorage.getItem('userData'));
+      if (!user || !user.id_cliente) {
+        alert('Debes iniciar sesión para enviar un mensaje.');
+        setLoading(false);
+        return;
+      }
+      // 1. Crear conversación (si no existe)
+      const id_conversacion = await chatService.crearConversacion(user.id_cliente);
+      // 2. Enviar mensaje inicial
+      await chatService.enviarMensaje({
+        id_conversacion,
+        remitente: 'cliente',
+        mensaje: formData.message
+      });
+      setFormData({ name: '', email: '', message: '' });
+      alert('Mensaje enviado correctamente.');
+    } catch (error) {
+      alert('Error al enviar el mensaje.');
+    }
     setLoading(false);
-    setFormData({ name: '', email: '', message: '' });
   };
 
   const testimonials = [
@@ -157,7 +176,7 @@ const Testimonials = () => {
                   {loading ? (
                     <>
                       <Loader className="animate-spin mr-2" size={20} />
-                      Enviando...
+                      Enviandooo...
                     </>
                   ) : (
                     'Enviar Mensaje'
