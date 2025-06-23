@@ -24,12 +24,31 @@ def enviar_mensaje(db, mensaje: MensajeCreate):
     return cursor.lastrowid
 
 # Listar conversaciones (admin ve todas, cliente solo las suyas)
-def listar_conversaciones(db, id_usuario_cliente: int = None) -> List[Conversacion]:
+def listar_conversaciones(db, id_usuario_cliente: int = None, rol: str = None):
+    print(f"[DEBUG] listar_conversaciones - id_usuario_cliente: {id_usuario_cliente}, rol: {rol}")
     cursor = db.cursor(dictionary=True)
-    if id_usuario_cliente:
-        cursor.execute("SELECT * FROM conversacion WHERE id_usuario_cliente = %s", (id_usuario_cliente,))
+    if rol == "admin":
+        remitente_objetivo = "cliente"
     else:
-        cursor.execute("SELECT * FROM conversacion")
+        remitente_objetivo = "admin"
+    print(f"[DEBUG] remitente_objetivo usado en SQL: {remitente_objetivo}")
+    if id_usuario_cliente:
+        cursor.execute(
+            '''SELECT c.*, CONCAT(u.nombre, ' ', u.apellido) as nombre_cliente,
+                      (SELECT COUNT(*) FROM mensaje m WHERE m.id_conversacion = c.id_conversacion AND m.leido = 0 AND m.remitente = %s) as no_leidos
+               FROM conversacion c
+               JOIN cliente u ON c.id_usuario_cliente = u.id_cliente
+               WHERE c.id_usuario_cliente = %s''',
+            (remitente_objetivo, id_usuario_cliente)
+        )
+    else:
+        cursor.execute(
+            '''SELECT c.*, CONCAT(u.nombre, ' ', u.apellido) as nombre_cliente,
+                      (SELECT COUNT(*) FROM mensaje m WHERE m.id_conversacion = c.id_conversacion AND m.leido = 0 AND m.remitente = %s) as no_leidos
+               FROM conversacion c
+               JOIN cliente u ON c.id_usuario_cliente = u.id_cliente''',
+            (remitente_objetivo,)
+        )
     return cursor.fetchall()
 
 # Listar mensajes de una conversación

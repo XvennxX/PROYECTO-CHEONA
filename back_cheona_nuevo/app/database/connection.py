@@ -1,5 +1,8 @@
 import mysql.connector
 from fastapi import Depends
+from sqlalchemy.orm import declarative_base
+
+Base = declarative_base()
 
 
 def get_db():

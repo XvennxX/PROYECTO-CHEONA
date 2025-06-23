@@ -30,6 +30,7 @@ const Notifications = lazy(() => import('./pages/user/Notifications'));
 // Admin pages
 const Dashboard = lazy(() => import('./pages/admin/Dashboard'));
 const EditSpace = lazy(() => import('./pages/admin/EditSpace'));
+const CrearAlojamiento = lazy(() => import('./pages/admin/CrearAlojamiento'));
 
 // Componente de carga
 const LoadingFallback = () => (
@@ -68,6 +69,7 @@ function App() {
               {/* Admin routes */}
               <Route path="/admin" element={<Dashboard />} />
               <Route path="/admin/espacios/:id/editar" element={<EditSpace />} />
+              <Route path="/admin/crear-alojamiento" element={<CrearAlojamiento />} />
               
               <Route path="*" element={<NotFound />} />
             </Routes>

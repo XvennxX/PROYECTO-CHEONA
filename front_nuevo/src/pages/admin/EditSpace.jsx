@@ -10,13 +10,16 @@ const EditSpace = () => {
   const [loading, setLoading] = useState(true);
   const [space, setSpace] = useState(null);
   const [form, setForm] = useState({
-    name: '',
-    type: '',
-    capacity: '',
-    price: '',
-    status: '',
-    images: [],
-    amenities: '',
+    nombre: '',
+    tipo: '',
+    capacidad: '',
+    precio_por_noche: '',
+    estado: '',
+    descripcion: '',
+    imagenes: [],
+    comodidades: '',
+    politicas: '',
+    servicios_adicionales: '',
   });
   const [saving, setSaving] = useState(false);
 
@@ -24,17 +27,22 @@ const EditSpace = () => {
     const fetchSpace = async () => {
       setLoading(true);
       try {
-        // Aquí deberías llamar a la API real
-        const data = await reservationService.getRoom(Number(id));
-        setSpace(data);
+        // Llama a la API real para obtener el alojamiento
+        const data = await reservationService.getRooms();
+        const found = (data || []).find(r => r.id === Number(id));
+        if (!found) throw new Error('No encontrado');
+        setSpace(found);
         setForm({
-          name: data.name || '',
-          type: data.type || '',
-          capacity: data.capacity || '',
-          price: data.price || '',
-          status: data.status || '',
-          images: data.images || [],
-          amenities: (data.amenities || []).join(', '),
+          nombre: found.nombre || '',
+          tipo: found.tipo || '',
+          capacidad: found.capacidad || '',
+          precio_por_noche: found.precio_por_noche || '',
+          estado: found.estado || '',
+          descripcion: found.descripcion || '',
+          imagenes: found.imagenes || [],
+          comodidades: (found.comodidades || []).join(', '),
+          politicas: found.politicas || '',
+          servicios_adicionales: (found.servicios_adicionales || []).join(', '),
         });
       } catch (e) {
         navigate('/admin');
@@ -54,13 +62,30 @@ const EditSpace = () => {
     e.preventDefault();
     setSaving(true);
     try {
-      // Aquí deberías llamar a la API real para actualizar
-      await reservationService.updateRoom(Number(id), {
-        ...form,
-        capacity: Number(form.capacity),
-        price: form.price,
-        amenities: form.amenities.split(',').map(a => a.trim()),
+      // Preparar datos para el backend
+      const payload = {
+        nombre: form.nombre,
+        tipo: form.tipo,
+        capacidad: form.capacidad ? Number(form.capacidad) : undefined,
+        precio_por_noche: form.precio_por_noche ? Number(form.precio_por_noche) : undefined,
+        estado: form.estado,
+        descripcion: form.descripcion,
+        imagenes: Array.isArray(form.imagenes) ? form.imagenes.filter(i => i) : [],
+        comodidades: form.comodidades ? form.comodidades.split(',').map(a => a.trim()).filter(Boolean) : [],
+        politicas: form.politicas,
+        servicios_adicionales: form.servicios_adicionales ? form.servicios_adicionales.split(',').map(s => s.trim()).filter(Boolean) : [],
+      };
+      // Eliminar campos vacíos para cumplir con el modelo Optional
+      Object.keys(payload).forEach(key => {
+        if (
+          payload[key] === undefined ||
+          (Array.isArray(payload[key]) && payload[key].length === 0) ||
+          payload[key] === ''
+        ) {
+          delete payload[key];
+        }
       });
+      await reservationService.updateRoom(Number(id), payload);
       navigate('/admin');
     } catch (e) {
       alert('Error al guardar los cambios');
@@ -80,37 +105,49 @@ const EditSpace = () => {
         <form className="bg-white rounded-2xl shadow-lg p-8 space-y-6" onSubmit={handleSave}>
           <div>
             <label className="block text-sm font-medium mb-1">Nombre</label>
-            <input name="name" value={form.name} onChange={handleChange} className="input w-full" required />
+            <input name="nombre" value={form.nombre} onChange={handleChange} className="input w-full" required />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Tipo</label>
-            <input name="type" value={form.type} onChange={handleChange} className="input w-full" required />
+            <input name="tipo" value={form.tipo} onChange={handleChange} className="input w-full" required />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Capacidad</label>
-            <input name="capacity" type="number" value={form.capacity} onChange={handleChange} className="input w-full" required />
+            <input name="capacidad" type="number" value={form.capacidad} onChange={handleChange} className="input w-full" required />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Precio por noche</label>
-            <input name="price" value={form.price} onChange={handleChange} className="input w-full" required />
+            <input name="precio_por_noche" value={form.precio_por_noche} onChange={handleChange} className="input w-full" required />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Estado</label>
-            <select name="status" value={form.status} onChange={handleChange} className="input w-full">
+            <select name="estado" value={form.estado} onChange={handleChange} className="input w-full">
               <option value="available">Disponible</option>
               <option value="occupied">Ocupado</option>
               <option value="maintenance">Mantenimiento</option>
             </select>
           </div>
           <div>
+            <label className="block text-sm font-medium mb-1">Descripción</label>
+            <textarea name="descripcion" value={form.descripcion} onChange={handleChange} className="input w-full" rows={2} required />
+          </div>
+          <div>
             <label className="block text-sm font-medium mb-1">Comodidades (separadas por coma)</label>
-            <input name="amenities" value={form.amenities} onChange={handleChange} className="input w-full" />
+            <input name="comodidades" value={form.comodidades} onChange={handleChange} className="input w-full" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Servicios adicionales (separados por coma)</label>
+            <input name="servicios_adicionales" value={form.servicios_adicionales} onChange={handleChange} className="input w-full" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Políticas</label>
+            <textarea name="politicas" value={form.politicas} onChange={handleChange} className="input w-full" rows={3} />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Fotos</label>
             <div className="flex gap-3 mb-2 flex-wrap">
-              {form.images && form.images.length > 0 ? (
-                form.images.map((img, idx) => (
+              {form.imagenes && form.imagenes.length > 0 ? (
+                form.imagenes.map((img, idx) => (
                   <img
                     key={idx}
                     src={img}

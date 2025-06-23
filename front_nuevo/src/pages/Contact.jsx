@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import SectionTitle from '../components/ui/SectionTitle';
 import Button from '../components/ui/Button';
 import { contactService } from '../services/contactService';
-import { chatService } from '../services/chatService';
 import { Check, MapPin, Phone, Mail, Clock, Loader, AlertCircle } from 'lucide-react';
 
 const Contact = () => {
@@ -46,16 +45,6 @@ const Contact = () => {
       let id_usuario_cliente = user.id_cliente;
       console.log('user:', user);
       console.log('id_usuario_cliente:', id_usuario_cliente);
-      // 1. Crear conversación (si no existe)
-      const id_conversacion = await chatService.crearConversacion(id_usuario_cliente);
-      console.log('id_conversacion:', id_conversacion);
-      // 2. Enviar mensaje inicial
-      const resp = await chatService.enviarMensaje({
-        id_conversacion,
-        remitente: 'cliente',
-        mensaje: formData.message
-      });
-      console.log('respuesta enviarMensaje:', resp);
       setSuccess(true);
       setFormData({
         name: '',
