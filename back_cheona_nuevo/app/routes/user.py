@@ -14,6 +14,18 @@ def get_user(id: int):
     cursor.execute(query, (id,))
     return cursor.fetchall()
 
+@router.get("/all")
+def get_all_users():
+    query = """
+    SELECT id_cliente, nombre, apellido, email, telefono, documento_identidad, rol, estado
+    FROM cliente
+    ORDER BY id_cliente DESC
+    """
+    cursor.execute(query)
+    results = cursor.fetchall()
+    columns = [col[0] for col in cursor.description]
+    return [dict(zip(columns, row)) for row in results]
+
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def insert_user(user: User):
     hashed_pw = hash_password(user.password)

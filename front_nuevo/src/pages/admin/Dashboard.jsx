@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../components/auth/AuthContext';
 import { 
   BarChart as BarChartIcon, 
-  Users, 
-  Calendar, 
+  Users,
+  Calendar,
   DollarSign,
   Settings,
   Bell,
@@ -43,8 +43,10 @@ import {
 } from 'recharts';
 import Button from '../../components/ui/Button';
 import { reservationService } from '../../services/reservationService';
+import { userService } from '../../services/userService';
 
 const Dashboard = () => {
+  const location = useLocation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
@@ -53,6 +55,27 @@ const Dashboard = () => {
   const [futureReservations, setFutureReservations] = useState([]); // NUEVO estado
   const [showActiveModal, setShowActiveModal] = useState(false);
   const [loadingActive, setLoadingActive] = useState(false);
+  const [spaces, setSpaces] = useState([]);
+  const [loadingSpaces, setLoadingSpaces] = useState(true);
+  const [showNewSpaceModal, setShowNewSpaceModal] = useState(false);
+  const [newSpace, setNewSpace] = useState({
+    nombre: '',
+    estado: 'available',
+    capacidad: '',
+    tipo: '',
+    descripcion: '',
+    comodidades: '',
+    precio_por_noche: '',
+    imagenes: '',
+    servicios_adicionales: '',
+    politicas: ''
+  });
+  const [creatingSpace, setCreatingSpace] = useState(false);
+  const [showCreatedMessage, setShowCreatedMessage] = useState(false);
+  const [createdMessageText, setCreatedMessageText] = useState('Alojamiento creado');
+  const [deleteModal, setDeleteModal] = useState({ open: false, id: null });
+  const [users, setUsers] = useState([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
   
   // Redirigir si el usuario no es admin
   React.useEffect(() => {
@@ -95,6 +118,43 @@ const Dashboard = () => {
     fetchReservations();
   }, []);
 
+  // Cargar espacios desde el backend
+  useEffect(() => {
+    const fetchSpaces = async () => {
+      setLoadingSpaces(true);
+      try {
+        const data = await reservationService.getRooms();
+        setSpaces(data);
+      } catch (e) {
+        setSpaces([]);
+      } finally {
+        setLoadingSpaces(false);
+      }
+    };
+    fetchSpaces();
+  }, []);
+
+  // Cargar usuarios reales al cambiar a la pestaña Usuarios
+  useEffect(() => {
+    if (activeTab === 'users') {
+      setLoadingUsers(true);
+      userService.getAllUsers()
+        .then(data => setUsers(data))
+        .catch(() => setUsers([]))
+        .finally(() => setLoadingUsers(false));
+    }
+  }, [activeTab]);
+
+  // Detectar query param ?created=1 y mostrar mensaje de éxito y la pestaña de espacios al llegar desde la creación.
+  React.useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('created') === '1') {
+      setActiveTab('spaces');
+      setShowCreatedMessage(true);
+      setTimeout(() => setShowCreatedMessage(false), 2500);
+    }
+  }, [location.search]);
+
   // Datos de ejemplo
   const monthlyReservations = [
     { name: 'Ene', reservas: 12 },
@@ -118,63 +178,6 @@ const Dashboard = () => {
     { name: 'Vie', ingresos: 4200000 },
     { name: 'Sáb', ingresos: 4800000 },
     { name: 'Dom', ingresos: 4000000 }
-  ];
-
-  const recentUsers = [
-    {
-      id: 1,
-      name: "María Rodríguez",
-      email: "maria@example.com",
-      phone: "+57 300 123 4567",
-      registeredDate: "2025-03-15",
-      reservations: 3,
-      status: "active"
-    },
-    {
-      id: 2,
-      name: "Juan Pérez",
-      email: "juan@example.com",
-      phone: "+57 300 987 6543",
-      registeredDate: "2025-03-14",
-      reservations: 1,
-      status: "active"
-    },
-    {
-      id: 3,
-      name: "Ana García",
-      email: "ana@example.com",
-      phone: "+57 300 456 7890",
-      registeredDate: "2025-03-13",
-      reservations: 2,
-      status: "inactive"
-    }
-  ];
-
-  const spaces = [
-    {
-      id: 1,
-      name: "Cabaña El Roble",
-      type: "cabin",
-      capacity: 4,
-      price: "1.200.000",
-      status: "available"
-    },
-    {
-      id: 2,
-      name: "Domo Celestial",
-      type: "glamping",
-      capacity: 2,
-      price: "800.000",
-      status: "occupied"
-    },
-    {
-      id: 3,
-      name: "Cabaña El Valle",
-      type: "cabin",
-      capacity: 6,
-      price: "1.500.000",
-      status: "maintenance"
-    }
   ];
 
   const notifications = [
@@ -353,8 +356,9 @@ const Dashboard = () => {
                 variant="outline"
                 size="sm"
                 icon={<PlusCircle size={18} />}
+                onClick={() => window.open('/admin/crear-alojamiento', '_blank')}
               >
-                Nueva Reserva
+                Nuevo Reserva
               </Button>
               <Button
                 variant="outline"
@@ -504,6 +508,51 @@ const Dashboard = () => {
           </div>
         </div>
       )}
+
+      {/* Modal para crear nuevo espacio: ahora visible en cualquier pestaña */}
+      {showNewSpaceModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 overflow-auto">
+          <form 
+            onSubmit={handleCreateSpace}
+            className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-8 relative"
+            style={{ minWidth: '320px', maxHeight: '95vh', overflowY: 'auto' }}
+          >
+            <button type="button" className="absolute top-4 right-4 text-neutral-500 hover:text-primary text-2xl" onClick={() => setShowNewSpaceModal(false)}>
+              ×
+            </button>
+            <h2 className="text-2xl font-bold mb-6 text-center">Nuevo Alojamiento</h2>
+            <div className="grid grid-cols-1 gap-4">
+              <input name="nombre" value={newSpace.nombre} onChange={handleNewSpaceChange} className="input" placeholder="Nombre" required />
+              <input name="tipo" value={newSpace.tipo} onChange={handleNewSpaceChange} className="input" placeholder="Tipo (cabaña, glamping, etc)" required />
+              <input name="capacidad" value={newSpace.capacidad} onChange={handleNewSpaceChange} className="input" placeholder="Capacidad" type="number" required />
+              <input name="precio_por_noche" value={newSpace.precio_por_noche} onChange={handleNewSpaceChange} className="input" placeholder="Precio por noche" type="number" required />
+              <input name="estado" value={newSpace.estado} onChange={handleNewSpaceChange} className="input" placeholder="Estado (available, occupied, maintenance)" required />
+              <textarea name="descripcion" value={newSpace.descripcion} onChange={handleNewSpaceChange} className="input" placeholder="Descripción" required />
+              <input name="imagenes" value={newSpace.imagenes} onChange={handleNewSpaceChange} className="input" placeholder="URLs de imágenes (separadas por coma)" required />
+              <input name="comodidades" value={newSpace.comodidades} onChange={handleNewSpaceChange} className="input" placeholder="Comodidades (separadas por coma)" required />
+              <input name="servicios_adicionales" value={newSpace.servicios_adicionales} onChange={handleNewSpaceChange} className="input" placeholder="Servicios adicionales (opcional, separadas por coma)" />
+              <textarea name="politicas" value={newSpace.politicas} onChange={handleNewSpaceChange} className="input" placeholder="Políticas (opcional)" />
+            </div>
+            <div className="flex justify-end mt-6">
+              <Button type="submit" variant="primary" disabled={creatingSpace} fullWidth>{creatingSpace ? 'Creando...' : 'Crear'}</Button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Modal de confirmación de eliminación */}
+      {deleteModal.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8 text-center">
+            <h2 className="text-xl font-bold mb-4">¿Estás seguro de que deseas eliminar este alojamiento?</h2>
+            <p className="mb-6 text-neutral-600">Esta acción no se puede deshacer.</p>
+            <div className="flex justify-center gap-4">
+              <Button variant="primary" onClick={confirmDeleteAlojamiento}>Aceptar</Button>
+              <Button variant="outline" onClick={cancelDeleteAlojamiento}>Cancelar</Button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 
@@ -554,49 +603,49 @@ const Dashboard = () => {
                 <th className="text-left py-3 px-4">Nombre</th>
                 <th className="text-left py-3 px-4">Email</th>
                 <th className="text-left py-3 px-4">Teléfono</th>
-                <th className="text-left py-3 px-4">Registro</th>
-                <th className="text-left py-3 px-4">Reservas</th>
+                <th className="text-left py-3 px-4">Rol</th>
                 <th className="text-left py-3 px-4">Estado</th>
                 <th className="text-left py-3 px-4">Acciones</th>
               </tr>
             </thead>
             <tbody>
-              {recentUsers.map((user) => (
-                <tr key={user.id} className="border-b border-neutral-100 hover:bg-neutral-50">
-                  <td className="py-3 px-4">{user.name}</td>
-                  <td className="py-3 px-4">{user.email}</td>
-                  <td className="py-3 px-4">{user.phone}</td>
-                  <td className="py-3 px-4">{user.registeredDate}</td>
-                  <td className="py-3 px-4">{user.reservations}</td>
-                  <td className="py-3 px-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      user.estado === 'activo'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {user.estado === 'activo' ? 'Activo' : 'Inactivo'}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4">
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm" icon={<Edit2 size={16} />}>
-                        Editar
-                      </Button>
-                      <Button variant="outline" size="sm" icon={<Mail size={16} />}>
-                        Contactar
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        className="text-red-600 hover:bg-red-50"
-                        icon={<Trash2 size={16} />}
-                      >
-                        Eliminar
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {loadingUsers ? (
+                <tr><td colSpan={7} className="text-center py-6 text-neutral-500">Cargando usuarios...</td></tr>
+              ) : users.length === 0 ? (
+                <tr><td colSpan={7} className="text-center py-6 text-neutral-500">No hay usuarios registrados.</td></tr>
+              ) : (
+                users.map((user) => (
+                  <tr key={user.id_cliente} className="border-b border-neutral-100 hover:bg-neutral-50">
+                    <td className="py-3 px-4">{user.nombre} {user.apellido}</td>
+                    <td className="py-3 px-4">{user.email}</td>
+                    <td className="py-3 px-4">{user.telefono}</td>
+                    <td className="py-3 px-4">{user.rol || '-'}</td>
+                    <td className="py-3 px-4">
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${user.estado === 'activo' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}> 
+                        {user.estado === 'activo' ? 'Activo' : 'Inactivo'}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm" icon={<Edit2 size={16} />}>
+                          Editar
+                        </Button>
+                        <Button variant="outline" size="sm" icon={<Mail size={16} />}>
+                          Contactar
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="text-red-600 hover:bg-red-50"
+                          icon={<Trash2 size={16} />}
+                        >
+                          Eliminar
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -606,6 +655,13 @@ const Dashboard = () => {
 
   const renderSpacesTab = () => (
     <div className="space-y-6">
+      {showCreatedMessage && (
+        <div className="flex justify-center items-center py-8">
+          <div className="bg-green-100 text-green-800 px-6 py-4 rounded-xl text-lg font-semibold shadow">
+            {createdMessageText}
+          </div>
+        </div>
+      )}
       <div className="bg-white rounded-2xl p-6 shadow-lg">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold">Gestión de Espacios</h2>
@@ -614,8 +670,9 @@ const Dashboard = () => {
               variant="outline"
               size="sm"
               icon={<PlusCircle size={18} />}
+              onClick={() => window.location.href = '/admin/crear-alojamiento'}
             >
-              Nuevo Espacio
+              Nuevo Alojamiento
             </Button>
             <Button
               variant="outline"
@@ -627,74 +684,98 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {spaces.map((space) => (
-            <div key={space.id} className="border border-neutral-200 rounded-xl p-4">
-              <div className="aspect-video rounded-lg bg-neutral-100 mb-4">
-                <img
-                  src="https://images.pexels.com/photos/2662816/pexels-photo-2662816.jpeg"
-                  alt={space.name}
-                  className="w-full h-full object-cover rounded-lg"
-                />
-              </div>
-              
-              <div className="flex items-start justify-between mb-2">
-                <div>
-                  <h3 className="font-semibold">{space.name}</h3>
-                  <p className="text-sm text-neutral-600 capitalize">{space.type}</p>
+        {loadingSpaces ? (
+          <div className="text-center py-8">Cargando espacios...</div>
+        ) : spaces.length === 0 ? (
+          <div className="text-center py-8 text-neutral-500">No hay espacios disponibles.</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {spaces.map((space) => (
+              <div key={space.id} className="border border-neutral-200 rounded-xl p-4">
+                <div className="aspect-video rounded-lg bg-neutral-100 mb-4">
+                  <img
+                    src={space.imagenes && space.imagenes.length > 0 ? space.imagenes[0] : "https://images.pexels.com/photos/2662816/pexels-photo-2662816.jpeg"}
+                    alt={space.nombre}
+                    className="w-full h-full object-cover rounded-lg"
+                  />
                 </div>
-                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  space.status === 'available' 
-                    ? 'bg-green-100 text-green-800'
-                    : space.status === 'occupied'
-                    ? 'bg-red-100 text-red-800'
-                    : 'bg-yellow-100 text-yellow-800'
-                }`}>
-                  {space.status === 'available' ? 'Disponible' : 
-                   space.status === 'occupied' ? 'Ocupado' : 'Mantenimiento'}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2 mb-4">
-                <Users size={16} className="text-neutral-500" />
-                <span className="text-sm text-neutral-600">
-                  Capacidad: {space.capacity} personas
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <p className="text-sm text-neutral-600">Precio por noche</p>
-                  <p className="font-semibold">${space.price}</p>
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <h3 className="font-semibold">{space.nombre}</h3>
+                    <p className="text-sm text-neutral-600 capitalize">{space.tipo}</p>
+                  </div>
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    space.estado === 'available' 
+                      ? 'bg-green-100 text-green-800'
+                      : space.estado === 'occupied'
+                      ? 'bg-red-100 text-red-800'
+                      : 'bg-yellow-100 text-yellow-800'
+                  }`}>
+                    {space.estado === 'available' ? 'Disponible' : 
+                     space.estado === 'occupied' ? 'Ocupado' : 'Mantenimiento'}
+                  </span>
                 </div>
-                <div className="flex items-center">
-                  <Star size={16} className="text-yellow-400 fill-current" />
-                  <span className="ml-1">4.8</span>
+                <div className="text-neutral-700 mb-2 text-sm line-clamp-2">{space.descripcion}</div>
+                <div className="flex items-center gap-2 mb-2">
+                  <Users size={16} className="text-neutral-500" />
+                  <span className="text-sm text-neutral-600">
+                    Capacidad: {space.capacidad} personas
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {space.comodidades && space.comodidades.slice(0, 3).map((c, i) => (
+                    <span key={i} className="inline-flex items-center bg-neutral-100 text-neutral-700 px-3 py-1 rounded-full text-xs">
+                      {c}
+                    </span>
+                  ))}
+                  {space.comodidades && space.comodidades.length > 3 && (
+                    <span className="inline-flex items-center bg-neutral-100 text-neutral-700 px-3 py-1 rounded-full text-xs">
+                      +{space.comodidades.length - 3} más
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="text-sm text-neutral-600">Precio por noche</p>
+                    <p className="font-semibold">${space.precio_por_noche}</p>
+                  </div>
+                  <div className="flex items-center">
+                    <Star size={16} className="text-yellow-400 fill-current" />
+                    <span className="ml-1">4.8</span>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    fullWidth
+                    icon={<Edit2 size={16} />}
+                    onClick={() => navigate(`/admin/espacios/${space.id}/editar`)}
+                  >
+                    Editar
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    fullWidth
+                    icon={<Image size={16} />}
+                  >
+                    Galería
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    fullWidth
+                    icon={<Trash2 size={16} />}
+                    onClick={() => handleDeleteAlojamiento(space.id)}
+                  >
+                    Eliminar
+                  </Button>
                 </div>
               </div>
-
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  fullWidth
-                  icon={<Edit2 size={16} />}
-                  onClick={() => navigate(`/admin/espacios/${space.id}/editar`)}
-                >
-                  Editar
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  fullWidth
-                  icon={<Image size={16} />}
-                >
-                  Galería
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -861,6 +942,65 @@ const Dashboard = () => {
     }
   };
 
+  const handleNewSpaceChange = (e) => {
+    const { name, value } = e.target;
+    setNewSpace((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCreateSpace = async (e) => {
+    e.preventDefault();
+    setCreatingSpace(true);
+    try {
+      await reservationService.createAlojamiento({
+        ...newSpace,
+        capacidad: Number(newSpace.capacidad),
+        precio_por_noche: Number(newSpace.precio_por_noche),
+        comodidades: newSpace.comodidades.split(',').map(c => c.trim()),
+        imagenes: newSpace.imagenes.split(',').map(i => i.trim()),
+        servicios_adicionales: newSpace.servicios_adicionales ? newSpace.servicios_adicionales.split(',').map(s => s.trim()) : [],
+      });
+      setShowNewSpaceModal(false);
+      setNewSpace({
+        nombre: '', estado: 'available', capacidad: '', tipo: '', descripcion: '', comodidades: '', precio_por_noche: '', imagenes: '', servicios_adicionales: '', politicas: ''
+      });
+      // Refrescar lista
+      const data = await reservationService.getRooms();
+      setSpaces(data);
+      setActiveTab('spaces');
+      setShowCreatedMessage(true);
+      setTimeout(() => setShowCreatedMessage(false), 2500);
+    } catch (e) {
+      alert('Error al crear el alojamiento');
+    } finally {
+      setCreatingSpace(false);
+    }
+  };
+
+  // --- FUNCIÓN PARA ELIMINAR ALOJAMIENTO ---
+  const handleDeleteAlojamiento = async (id) => {
+    setDeleteModal({ open: true, id });
+  };
+
+  const confirmDeleteAlojamiento = async () => {
+    if (!deleteModal.id) return;
+    try {
+      await reservationService.deleteAlojamiento(deleteModal.id);
+      const data = await reservationService.getRooms();
+      setSpaces(data);
+      setCreatedMessageText('Alojamiento eliminado');
+      setShowCreatedMessage(true);
+      setTimeout(() => setShowCreatedMessage(false), 2500);
+      setDeleteModal({ open: false, id: null });
+    } catch (e) {
+      alert('No se pudo eliminar el alojamiento.');
+      setDeleteModal({ open: false, id: null });
+    }
+  };
+
+  const cancelDeleteAlojamiento = () => {
+    setDeleteModal({ open: false, id: null });
+  };
+
   return (
     <div className="min-h-screen bg-neutral-50 pt-20">
       <div className="container-custom py-12">
@@ -921,6 +1061,19 @@ d-xl transition-colors ${
         {activeTab === 'spaces' && renderSpacesTab()}
         {activeTab === 'settings' && renderSettingsTab()}
       </div>
+      {/* Modal de confirmación de eliminación: ahora global para todas las pestañas */}
+      {deleteModal.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8 text-center">
+            <h2 className="text-xl font-bold mb-4">¿Estás seguro de que deseas eliminar este alojamiento?</h2>
+            <p className="mb-6 text-neutral-600">Esta acción no se puede deshacer.</p>
+            <div className="flex justify-center gap-4">
+              <Button variant="primary" onClick={confirmDeleteAlojamiento}>Aceptar</Button>
+              <Button variant="outline" onClick={cancelDeleteAlojamiento}>Cancelar</Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

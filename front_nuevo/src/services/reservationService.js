@@ -28,13 +28,14 @@ export const reservationService = {
     return rooms.find(r => r.id === id);
   },
   async updateRoom(id, data) {
-    // Simulación: actualiza el objeto en el mock (solo para frontend dev)
-    const idx = rooms.findIndex(r => r.id === id);
-    if (idx !== -1) {
-      rooms[idx] = { ...rooms[idx], ...data };
-      return rooms[idx];
-    }
-    throw new Error('Alojamiento no encontrado');
+    // Actualiza un alojamiento en el backend
+    const response = await fetch(`http://localhost:8000/alojamientos/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) throw new Error('No se pudo actualizar el alojamiento');
+    return response.json();
   },
   async getReservedDates(idAlojamiento) {
     // Llama a la API real para obtener los rangos reservados
@@ -86,5 +87,32 @@ export const reservationService = {
     });
     if (!response.ok) throw new Error('No se pudo confirmar el pago');
     return response.json();
-  }
+  },
+  async getRooms() {
+    // Llama a la API real para obtener todos los alojamientos
+    const response = await fetch('http://localhost:8000/alojamientos/');
+    if (!response.ok) throw new Error('No se pudieron obtener los alojamientos');
+    return response.json();
+  },
+  async createAlojamiento(alojamiento) {
+    // Llama a la API real para crear un alojamiento
+    const response = await fetch('http://localhost:8000/alojamientos/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(alojamiento)
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.detail || 'Error al crear el alojamiento');
+    }
+    return response.json();
+  },
+  async deleteAlojamiento(id) {
+    // Elimina un alojamiento en el backend
+    const response = await fetch(`http://localhost:8000/alojamientos/${id}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) throw new Error('No se pudo eliminar el alojamiento');
+    return response.json();
+  },
 };

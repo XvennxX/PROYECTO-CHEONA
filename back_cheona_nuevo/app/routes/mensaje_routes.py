@@ -15,8 +15,11 @@ def enviar_mensaje(data: MensajeCreate, db=Depends(get_db)):
     return mensaje_service.enviar_mensaje(db, data)
 
 @router.get("/conversaciones", response_model=List[dict])
-def listar_conversaciones(id_usuario_cliente: int = None, db=Depends(get_db)):
-    return mensaje_service.listar_conversaciones(db, id_usuario_cliente)
+def listar_conversaciones(id_usuario_cliente: int = None, rol: str = None, db=Depends(get_db)):
+    # Si no se pasa rol, por defecto admin
+    if not rol:
+        rol = "admin"
+    return mensaje_service.listar_conversaciones(db, id_usuario_cliente, rol)
 
 @router.get("/mensajes/{id_conversacion}", response_model=List[dict])
 def listar_mensajes(id_conversacion: int, db=Depends(get_db)):
