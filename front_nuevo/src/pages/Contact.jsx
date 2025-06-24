@@ -85,7 +85,7 @@ const Contact = () => {
             />
             
             <p className="text-neutral-600 mb-8">
-              Si tienes alguna pregunta sobre nuestras instalaciones, servicios o disponibilidad, no dudes en contactarnos. Nuestro equipo estará encantado de atenderte y ayudarte a planificar tu estancia perfecta en Finca Los Olivos.
+              Si tienes alguna pregunta sobre nuestras instalaciones, servicios o disponibilidad, no dudes en contactarnos. Nuestro equipo estará encantado de atenderte y ayudarte a planificar tu estancia perfecta en Finca Cheona.
             </p>
             
             <div className="space-y-6 mb-8">
@@ -106,7 +106,7 @@ const Contact = () => {
                 <div>
                   <h3 className="font-semibold mb-1">Teléfono</h3>
                   <p className="text-neutral-600">
-                    <a href="tel:+34912345678" className="hover:text-primary transition-colors">+34 912 345 678</a>
+                    <a href="tel:+573104813073" className="hover:text-primary transition-colors">+57 310 481 3073</a>
                   </p>
                 </div>
               </div>
@@ -118,7 +118,7 @@ const Contact = () => {
                 <div>
                   <h3 className="font-semibold mb-1">Email</h3>
                   <p className="text-neutral-600">
-                    <a href="mailto:info@fincalosolivos.com" className="hover:text-primary transition-colors">info@fincalosolivos.com</a>
+                    <a href="mailto:cheona_redes@hotmail.com" className="hover:text-primary transition-colors">cheona_redes@hotmail.com</a>
                   </p>
                 </div>
               </div>
@@ -144,7 +144,7 @@ const Contact = () => {
                 allowFullScreen 
                 loading="lazy" 
                 referrerPolicy="no-referrer-when-downgrade"
-                title="Ubicación de Finca Los Olivos"
+                title="Ubicación de Finca Cheona"
               ></iframe>
             </div>
           </div>

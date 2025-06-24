@@ -42,7 +42,8 @@ img {
 }
 
 .react-datepicker__month-container {
-  @apply !float-none !inline-block !bg-white !rounded-xl !p-4;
+  @apply !float-none !inline-block !bg-white !rounded-xl;
+  padding: 1rem !important;
   width: calc(50% - 0.5rem) !important;
 }
 
@@ -62,8 +63,9 @@ img {
 }
 
 .react-datepicker__day-name {
-  @apply !w-10 !h-10 !flex !items-center !justify-center !m-0;
+  @apply !w-8 !h-8 !flex !items-center !justify-center;
   @apply !text-sm !font-medium !text-neutral-500 !capitalize;
+  margin: 1px !important; /* Mantenemos el mismo margen que los días */
 }
 
 .react-datepicker__month {
@@ -71,19 +73,23 @@ img {
 }
 
 .react-datepicker__week {
-  @apply !grid !grid-cols-7 !gap-0;
+  @apply !grid !grid-cols-7;
+  gap: 2px !important; /* Añadimos gap entre días */
 }
 
 .react-datepicker__day {
-  @apply !w-10 !h-10 !flex !items-center !justify-center !m-0;
+  @apply !w-8 !h-8 !flex !items-center !justify-center;
   @apply !text-sm !font-medium !rounded-lg !transition-colors;
   @apply hover:!bg-primary/10 hover:!text-primary;
+  margin: 1px !important; /* Margen alrededor de cada día */
 }
 
 .react-datepicker__day--selected,
 .react-datepicker__day--in-range {
   @apply !bg-primary !text-white;
   @apply hover:!bg-primary-dark hover:!text-white;
+  position: relative;
+  z-index: 1;
 }
 
 .react-datepicker__day--keyboard-selected {
