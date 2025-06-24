@@ -7,7 +7,7 @@ const Hero = () => {
     <div className="relative h-screen min-h-[600px] max-h-[800px]">
       <div className="absolute inset-0 z-0">
         <img
-          src="https://images.pexels.com/photos/2356045/pexels-photo-2356045.jpeg?auto=compress&cs=tinysrgb&w=1600"
+          src="http://localhost:8000/static/alojamientos/finca/Imagen de WhatsApp 2025-03-10 a las 19.58.48_e6dd73b0 (1).jpg"
           alt="Finca Cheona"
           className="w-full h-full object-cover"
           loading="eager"
@@ -23,7 +23,7 @@ const Hero = () => {
           <p className="text-xl md:text-2xl mb-8 text-white/90 slide-up font-light" style={{ animationDelay: '0.2s' }}>
             Donde los sueños se convierten en momentos inolvidables
           </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4 slide-up" style={{ animationDelay: '0.3s' }}>
+          <div className="flex justify-center slide-up" style={{ animationDelay: '0.3s' }}>
             <Button 
               to="/reservar" 
               variant="primary" 
@@ -32,15 +32,6 @@ const Hero = () => {
               className="w-full sm:w-auto px-6 py-2.5 text-sm"
             >
               Reservar ahora
-            </Button>
-            <Button 
-              to="/habitaciones" 
-              variant="outline" 
-              size="sm"
-              className="border-white text-white hover:bg-white hover:text-primary w-full sm:w-auto px-6 py-2.5 text-sm"
-              icon={<ChevronRight size={18} />}
-            >
-              Ver alojamientos
             </Button>
           </div>
         </div>

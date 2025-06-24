@@ -9,16 +9,13 @@ const Home = lazy(() => import('./pages/Home'));
 const Rooms = lazy(() => import('./pages/Rooms'));
 const RoomDetail = lazy(() => import('./pages/RoomDetail'));
 const Reservation = lazy(() => import('./pages/Reservation'));
-const Services = lazy(() => import('./pages/Services'));
 const Gallery = lazy(() => import('./pages/Gallery'));
 const Contact = lazy(() => import('./pages/Contact'));
 const HowToGet = lazy(() => import('./pages/HowToGet'));
 const NotFound = lazy(() => import('./pages/NotFound'));
-
-// Service pages
-const Camping = lazy(() => import('./pages/services/Camping'));
-const Events = lazy(() => import('./pages/services/Events'));
-const Restaurant = lazy(() => import('./pages/services/Restaurant'));
+const Nosotros = lazy(() => import('./pages/Nosotros'));
+const PoliticaPrivacidad = lazy(() => import('./pages/PoliticaPrivacidad'));
+const TerminosCondiciones = lazy(() => import('./pages/TerminosCondiciones'));
 
 // User pages
 const Profile = lazy(() => import('./pages/user/Profile'));
@@ -51,13 +48,12 @@ function App() {
               <Route path="/habitaciones" element={<Rooms />} />
               <Route path="/habitaciones/:id" element={<RoomDetail />} />
               <Route path="/reservar" element={<Reservation />} />
-              <Route path="/servicios" element={<Services />} />
-              <Route path="/servicios/camping" element={<Camping />} />
-              <Route path="/servicios/eventos" element={<Events />} />
-              <Route path="/servicios/restaurante" element={<Restaurant />} />
               <Route path="/galeria" element={<Gallery />} />
               <Route path="/como-llegar" element={<HowToGet />} />
               <Route path="/contacto" element={<Contact />} />
+              <Route path="/nosotros" element={<Nosotros />} />
+              <Route path="/politica-privacidad" element={<PoliticaPrivacidad />} />
+              <Route path="/terminos-condiciones" element={<TerminosCondiciones />} />
               
               {/* User routes */}
               <Route path="/perfil" element={<Profile />} />

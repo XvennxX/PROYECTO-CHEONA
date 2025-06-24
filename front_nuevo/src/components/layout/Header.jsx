@@ -84,7 +84,6 @@ const Header = () => {
   const navigationItems = [
     ['/', 'Inicio'],
     ['/reservar', 'Reserva'],
-    ['/servicios', 'Planes & Servicios'],
     ['/como-llegar', 'Cómo Llegar'],
   ];
 
@@ -105,8 +104,22 @@ const Header = () => {
   }
 
   // Lista de rutas que deben tener header transparente
-  const transparentHeaderPaths = ['/', '/reservar', '/servicios', '/como-llegar'];
+  const transparentHeaderPaths = ['/', '/reservar', '/como-llegar'];
   const shouldBeTransparent = transparentHeaderPaths.includes(location.pathname);
+  
+  // Estilo especial para la página Cómo Llegar
+  const isComoLlegar = location.pathname === '/como-llegar';
+  
+  // Determinar el color del texto para elementos del header
+  const getTextColor = () => {
+    if (isScrolled || !shouldBeTransparent) {
+      return 'text-neutral-700';
+    } else if (isComoLlegar) {
+      return 'text-neutral-600'; // Gris neutro para Cómo Llegar
+    } else {
+      return 'text-white'; // Blanco para las demás páginas transparentes
+    }
+  };
 
   return (
     <>
@@ -125,18 +138,18 @@ const Header = () => {
                 <TreePine 
                   size={32} 
                   className={`transition-colors duration-300 ${
-                    isScrolled || !shouldBeTransparent ? 'text-primary' : 'text-white'
+                    isScrolled || !shouldBeTransparent ? 'text-primary' : isComoLlegar ? 'text-neutral-600' : 'text-white'
                   }`}
                   strokeWidth={1.5}
                 />
                 <div className="flex flex-col -space-y-1">
                   <span className={`text-2xl font-bold font-heading tracking-wide transition-colors leading-tight ${
-                    isScrolled || !shouldBeTransparent ? 'text-primary' : 'text-white'
+                    isScrolled || !shouldBeTransparent ? 'text-primary' : isComoLlegar ? 'text-neutral-600' : 'text-white'
                   }`}>
                     Finca
                   </span>
                   <span className={`text-xl font-medium font-heading tracking-wide transition-colors ${
-                    isScrolled || !shouldBeTransparent ? 'text-primary' : 'text-white'
+                    isScrolled || !shouldBeTransparent ? 'text-primary' : isComoLlegar ? 'text-neutral-600' : 'text-white'
                   }`}>
                     Cheona
                   </span>
@@ -154,10 +167,14 @@ const Header = () => {
                     isActive(path)
                       ? isScrolled || !shouldBeTransparent
                         ? 'bg-primary/10 text-primary'
-                        : 'bg-white/20 text-white'
+                        : isComoLlegar
+                          ? 'bg-neutral-300/30 text-neutral-600'
+                          : 'bg-white/20 text-white'
                       : isScrolled || !shouldBeTransparent
                         ? 'text-neutral-700 hover:bg-neutral-100'
-                        : 'text-white/90 hover:bg-white/10 hover:text-white'
+                        : isComoLlegar
+                          ? 'text-neutral-600 hover:bg-neutral-300/30 hover:text-neutral-800'
+                          : 'text-white/90 hover:bg-white/10 hover:text-white'
                   }`}
                 >
                   {label}
@@ -175,7 +192,9 @@ const Header = () => {
                     className={`relative p-2 rounded-full transition-colors ${
                       isScrolled || !shouldBeTransparent
                         ? 'hover:bg-neutral-100 text-neutral-700'
-                        : 'text-white hover:bg-white/10'
+                        : isComoLlegar
+                          ? 'text-neutral-600 hover:bg-neutral-300/30'
+                          : 'text-white hover:bg-white/10'
                     }`}
                   >
                     <Bell size={20} />
@@ -192,7 +211,9 @@ const Header = () => {
                       className={`flex items-center space-x-2 px-4 py-2 rounded-full transition-colors ${
                         isScrolled || !shouldBeTransparent
                           ? 'hover:bg-neutral-100 text-neutral-700' 
-                          : 'text-white hover:bg-white/10'
+                          : isComoLlegar
+                            ? 'text-neutral-600 hover:bg-neutral-300/30'
+                            : 'text-white hover:bg-white/10'
                       }`}
                     >
                       <User size={20} />
@@ -232,7 +253,9 @@ const Header = () => {
                     onClick={() => handleAuthClick('login')}
                     className={`rounded-full px-5 transition-all duration-300 ${
                       !isScrolled && shouldBeTransparent
-                        ? 'border-white text-white hover:bg-white hover:text-primary' 
+                        ? isComoLlegar
+                            ? 'border-primary text-primary hover:bg-primary hover:text-white' 
+                            : 'border-white text-white hover:bg-white hover:text-primary' 
                         : 'hover:bg-primary/10'
                     }`}
                   >
@@ -254,7 +277,11 @@ const Header = () => {
             <button
               onClick={toggleMenu}
               className={`md:hidden p-2 transition-colors ${
-                isScrolled || !shouldBeTransparent ? 'text-neutral-700' : 'text-white'
+                isScrolled || !shouldBeTransparent 
+                  ? 'text-neutral-700' 
+                  : isComoLlegar
+                    ? 'text-neutral-600'
+                    : 'text-white'
               } hover:text-primary focus:outline-none`}
               aria-label="Toggle menu"
             >

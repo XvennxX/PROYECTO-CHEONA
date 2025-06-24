@@ -12,7 +12,7 @@ const Reservation = () => {
       {/* Hero Section */}
       <div className="relative h-[400px] w-full">
         <img
-          src="https://images.pexels.com/photos/147411/italy-mountains-dawn-daybreak-147411.jpeg"
+          src="http://localhost:8000/static/alojamientos/finca/IMG-20250623-WA0087.jpg"
           alt="Reservas"
           className="w-full h-full object-cover"
         />
