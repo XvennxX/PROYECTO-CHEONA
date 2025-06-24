@@ -5,8 +5,31 @@ from ..models.reservation_model import ReservationCreate, ReservationUpdate, Res
 from app.database.connection import cursor, mydb
 
 def create_reservation(data: ReservationCreate):
-    print(">>> create_reservation ejecutado")
+    print(">>> create_reservation ejecutado con datos:", data)
     fecha_reserva = datetime.now()
+    
+    # Convertir fechas si vienen como string
+    fecha_inicio = data.fecha_inicio
+    fecha_fin = data.fecha_fin
+    
+    if isinstance(fecha_inicio, str):
+        try:
+            fecha_inicio = datetime.fromisoformat(fecha_inicio.replace('Z', '+00:00'))
+        except ValueError:
+            try:
+                fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d")
+            except ValueError:
+                raise HTTPException(status_code=422, detail=f"Formato de fecha_inicio inválido: {fecha_inicio}")
+    
+    if isinstance(fecha_fin, str):
+        try:
+            fecha_fin = datetime.fromisoformat(fecha_fin.replace('Z', '+00:00'))
+        except ValueError:
+            try:
+                fecha_fin = datetime.strptime(fecha_fin, "%Y-%m-%d")
+            except ValueError:
+                raise HTTPException(status_code=422, detail=f"Formato de fecha_fin inválido: {fecha_fin}")
+    
     insert_query = """
         INSERT INTO reservas (id_cliente, id_alojamiento, fecha_reserva, fecha_inicio, fecha_fin, cantidad_personas,
                             estado, metodo_pago, pago_confirmado, observaciones, costo_total)
@@ -16,8 +39,8 @@ def create_reservation(data: ReservationCreate):
         data.id_cliente,
         data.id_alojamiento,
         fecha_reserva,
-        data.fecha_inicio,
-        data.fecha_fin,
+        fecha_inicio,
+        fecha_fin,
         data.cantidad_personas,
         "pendiente",            # Estado inicial
         data.metodo_pago,
@@ -25,11 +48,16 @@ def create_reservation(data: ReservationCreate):
         data.observaciones,
         data.costo_total
     )
+    
+    print(">>> SQL:", insert_query)
+    print(">>> Values:", values)
+    
     try:
         cursor.execute(insert_query, values)
         mydb.commit()
         return {"message": "Reserva creada exitosamente"}
     except Exception as e:
+        print(">>> Error al crear reserva:", str(e))
         raise HTTPException(status_code=400, detail=f"Error al crear la reserva: {e}")
 
 def check_availability(id_alojamiento: int, fecha_inicio, fecha_fin) -> bool:
