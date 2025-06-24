@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Loader, Eye, EyeOff } from 'lucide-react';
 import Button from '../ui/Button';
+import { useAuth } from './AuthContext';
 
 const RegisterForm = ({ onClose }) => {
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     nombre: '',
     apellido: '',
@@ -50,6 +52,41 @@ const RegisterForm = ({ onClose }) => {
         throw new Error(data.message || 'Error al crear la cuenta. Por favor, inténtalo de nuevo.');
       }
 
+      const userData = await response.json();
+      
+      // Ahora hacemos login automático con el endpoint de login
+      const loginResponse = await fetch('http://localhost:8000/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        })
+      });
+
+      if (!loginResponse.ok) {
+        // Si falla el login automático, cerramos el modal pero advertimos al usuario
+        onClose();
+        throw new Error('Cuenta creada correctamente, pero hubo un problema al iniciar sesión. Por favor, inicia sesión manualmente.');
+      }
+
+      // Procesamos respuesta de login
+      const loginData = await loginResponse.json();
+      const expiresIn = loginData.expires_in || 3600;
+
+      // Login con indicador de cuenta nueva
+      login({
+        id_cliente: loginData.user.id_cliente,
+        nombre: loginData.user.nombre,
+        apellido: loginData.user.apellido,
+        email: loginData.user.email,
+        telefono: loginData.user.telefono,
+        documento_identidad: loginData.user.documento_identidad,
+        rol: loginData.user.rol
+      }, loginData.access_token, expiresIn, true); // true indica que es una cuenta nueva
+      
       onClose();
     } catch (err) {
       setError(err.message || 'Error al crear la cuenta. Por favor, inténtalo de nuevo.');

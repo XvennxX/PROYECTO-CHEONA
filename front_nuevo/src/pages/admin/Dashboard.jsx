@@ -57,6 +57,9 @@ const Dashboard = () => {
   const [activeReservations, setActiveReservations] = useState([]);
   const [futureReservations, setFutureReservations] = useState([]); // NUEVO estado
   const [ingresosMes, setIngresosMes] = useState(0); // Estado para los ingresos mensuales
+  const [ocupacionPorcentaje, setOcupacionPorcentaje] = useState(0); // Porcentaje de ocupación real
+  const [totalUsuarios, setTotalUsuarios] = useState(0); // Cantidad total de usuarios registrados
+  const [loadingTotalUsuarios, setLoadingTotalUsuarios] = useState(false); // Estado de carga para total de usuarios
   const [showActiveModal, setShowActiveModal] = useState(false);
   const [loadingActive, setLoadingActive] = useState(false);
   const [spaces, setSpaces] = useState([]);
@@ -125,6 +128,13 @@ const Dashboard = () => {
         const ingresos = calcularIngresosMes(all);
         setIngresosMes(ingresos);
         
+        // Obtener espacios para calcular ocupación
+        const espaciosData = await reservationService.getRooms();
+        
+        // Calcular porcentaje de ocupación
+        const porcentajeOcupacion = calcularPorcentajeOcupacion(all, espaciosData);
+        setOcupacionPorcentaje(porcentajeOcupacion);
+        
         // Log detallado para depuración
         const hoy = new Date();
         const primerDiaMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
@@ -144,6 +154,7 @@ const Dashboard = () => {
         setActiveReservations([]);
         setFutureReservations([]);
         setIngresosMes(0);
+        setOcupacionPorcentaje(0);
       }
       setLoadingActive(false);
     };
@@ -171,11 +182,35 @@ const Dashboard = () => {
     if (activeTab === 'users') {
       setLoadingUsers(true);
       userService.getAllUsers()
-        .then(data => setUsers(data))
-        .catch(() => setUsers([]))
+        .then(data => {
+          setUsers(data);
+          // También actualizamos el contador total de usuarios
+          setTotalUsuarios(data.length);
+        })
+        .catch(() => {
+          setUsers([]);
+        })
         .finally(() => setLoadingUsers(false));
     }
   }, [activeTab]);
+  
+  // Cargar la cantidad total de usuarios registrados al iniciar
+  useEffect(() => {
+    const fetchTotalUsers = async () => {
+      setLoadingTotalUsuarios(true);
+      try {
+        const data = await userService.getAllUsers();
+        setTotalUsuarios(data.length);
+      } catch (error) {
+        console.error('Error al obtener el total de usuarios:', error);
+        setTotalUsuarios(0);
+      } finally {
+        setLoadingTotalUsuarios(false);
+      }
+    };
+    
+    fetchTotalUsers();
+  }, []);
 
   // Detectar query param ?created=1 y mostrar mensaje de éxito y la pestaña de espacios al llegar desde la creación.
   React.useEffect(() => {
@@ -197,9 +232,10 @@ const Dashboard = () => {
     { name: 'Jun', reservas: 25 }
   ];
 
+  // Datos de ocupación para el gráfico de torta (actualizado dinámicamente)
   const occupancyData = [
-    { name: 'Ocupadas', value: 7 },
-    { name: 'Disponibles', value: 3 }
+    { name: 'Ocupadas', value: ocupacionPorcentaje },
+    { name: 'Disponibles', value: 100 - ocupacionPorcentaje }
   ];
 
   const weeklyIncome = [
@@ -277,6 +313,65 @@ const Dashboard = () => {
     return reservasPagadasDelMes.reduce((total, r) => total + (r.costo_total || 0), 0);
   };
 
+  // Función para calcular el porcentaje de ocupación del mes actual
+  const calcularPorcentajeOcupacion = (reservas, espacios) => {
+    if (!reservas || !espacios || reservas.length === 0 || espacios.length === 0) return 0;
+    
+    // Obtener el primer y último día del mes actual
+    const hoy = new Date();
+    const primerDiaMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+    const ultimoDiaMes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
+    
+    // Total de días en el mes
+    const diasEnMes = ultimoDiaMes.getDate();
+    
+    // Total de días disponibles (días del mes * número de alojamientos)
+    const totalDiasDisponibles = diasEnMes * espacios.length;
+    
+    // Contador para días ocupados por alojamiento
+    const diasOcupados = {};
+    
+    // Inicializar contador para cada alojamiento
+    espacios.forEach(espacio => {
+      diasOcupados[espacio.id] = new Set(); // Usamos Set para evitar contar días duplicados
+    });
+    
+    // Contar días ocupados por cada reserva activa o futura dentro del mes actual
+    reservas.forEach(reserva => {
+      if (reserva.estado === 'cancelada') return;
+      
+      const fechaInicio = new Date(reserva.fecha_inicio);
+      const fechaFin = new Date(reserva.fecha_fin);
+      
+      // Ajustar fechas para que estén dentro del mes actual
+      const inicioEnMes = fechaInicio < primerDiaMes ? primerDiaMes : fechaInicio;
+      const finEnMes = fechaFin > ultimoDiaMes ? ultimoDiaMes : fechaFin;
+      
+      // Si la reserva no tiene intersección con el mes actual, saltarla
+      if (inicioEnMes > ultimoDiaMes || finEnMes < primerDiaMes) return;
+      
+      // Contar cada día ocupado
+      let currentDate = new Date(inicioEnMes);
+      while (currentDate <= finEnMes) {
+        const idAlojamiento = reserva.id_alojamiento || reserva.alojamiento_id;
+        if (diasOcupados[idAlojamiento]) {
+          diasOcupados[idAlojamiento].add(currentDate.getDate());
+        }
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+    });
+    
+    // Sumar todos los días ocupados
+    let totalDiasOcupados = 0;
+    Object.values(diasOcupados).forEach(dias => {
+      totalDiasOcupados += dias.size;
+    });
+    
+    // Calcular porcentaje de ocupación
+    const porcentaje = (totalDiasOcupados / totalDiasDisponibles) * 100;
+    return Math.round(porcentaje);
+  };
+
   const renderOverviewTab = () => (
     <>
       {/* KPIs */}
@@ -321,7 +416,10 @@ const Dashboard = () => {
             </div>
             <div>
               <h3 className="text-sm text-neutral-600">Ocupación</h3>
-              <p className="text-2xl font-bold">70%</p>
+              <p className="text-2xl font-bold">{loadingActive ? '...' : `${ocupacionPorcentaje}%`}</p>
+              <p className="text-xs text-neutral-500">
+                {new Date().toLocaleDateString('es-CO', { month: 'long', year: 'numeric' })}
+              </p>
             </div>
           </div>
         </div>
@@ -333,7 +431,13 @@ const Dashboard = () => {
             </div>
             <div>
               <h3 className="text-sm text-neutral-600">Clientes Registrados</h3>
-              <p className="text-2xl font-bold">156</p>
+              <p className="text-2xl font-bold">
+                {loadingTotalUsuarios ? (
+                  <span className="animate-pulse">...</span>
+                ) : (
+                  totalUsuarios
+                )}
+              </p>
             </div>
           </div>
         </div>
@@ -868,14 +972,6 @@ const Dashboard = () => {
                     variant="outline"
                     size="sm"
                     fullWidth
-                    icon={<Image size={16} />}
-                  >
-                    Galería
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    fullWidth
                     icon={<Trash2 size={16} />}
                     onClick={() => handleDeleteAlojamiento(space.id)}
                   >
@@ -1082,6 +1178,10 @@ const Dashboard = () => {
       // Recalcular ingresos mensuales basados en la fecha de creación de la reserva
       const ingresos = calcularIngresosMes(all);
       setIngresosMes(ingresos);
+      
+      // Calcular porcentaje de ocupación
+      const porcentajeOcupacion = calcularPorcentajeOcupacion(all, spaces);
+      setOcupacionPorcentaje(porcentajeOcupacion);
       
       console.log('Ingresos recalculados después de confirmar pago:', ingresos);
       

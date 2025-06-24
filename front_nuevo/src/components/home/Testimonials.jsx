@@ -122,8 +122,8 @@ const Testimonials = () => {
                 </div>
                 <div className="flex items-center">
                   <Phone className="text-primary w-6 h-6 mr-4" />
-                  <a href="tel:+573222108528" className="hover:text-primary transition-colors">
-                    +57 322 210 8528
+                  <a href="tel:+573104813073" className="hover:text-primary transition-colors">
+                    +57 310 481 3073
                   </a>
                 </div>
                 <div className="flex items-center">

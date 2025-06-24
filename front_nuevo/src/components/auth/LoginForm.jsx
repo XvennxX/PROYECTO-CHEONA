@@ -53,8 +53,8 @@ const LoginForm = ({ onClose }) => {
         documento_identidad: userData.user.documento_identidad,
         rol: userData.user.rol
       }, userData.access_token, expiresIn);
-      // Confirmación visual
-      alert('Login exitoso. Usuario guardado en localStorage.');
+      
+      // Cerrar modal de login
       onClose();
     } catch (err) {
       setError('Email o contraseña incorrectos');
