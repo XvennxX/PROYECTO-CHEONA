@@ -53,10 +53,10 @@ const Dashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
-  const [selectedDateRange, setSelectedDateRange] = useState('week');
   const [activeReservations, setActiveReservations] = useState([]);
   const [futureReservations, setFutureReservations] = useState([]); // NUEVO estado
   const [ingresosMes, setIngresosMes] = useState(0); // Estado para los ingresos mensuales
+  const [reservasMensuales, setReservasMensuales] = useState([]); // Estado para las reservas mensuales
   const [ocupacionPorcentaje, setOcupacionPorcentaje] = useState(0); // Porcentaje de ocupación real
   const [totalUsuarios, setTotalUsuarios] = useState(0); // Cantidad total de usuarios registrados
   const [loadingTotalUsuarios, setLoadingTotalUsuarios] = useState(false); // Estado de carga para total de usuarios
@@ -135,6 +135,10 @@ const Dashboard = () => {
         const porcentajeOcupacion = calcularPorcentajeOcupacion(all, espaciosData);
         setOcupacionPorcentaje(porcentajeOcupacion);
         
+        // Calcular reservas mensuales reales
+        const dataReservasMensuales = obtenerReservasPorMes(all);
+        setReservasMensuales(dataReservasMensuales);
+        
         // Log detallado para depuración
         const hoy = new Date();
         const primerDiaMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
@@ -155,6 +159,7 @@ const Dashboard = () => {
         setFutureReservations([]);
         setIngresosMes(0);
         setOcupacionPorcentaje(0);
+        setReservasMensuales([]);
       }
       setLoadingActive(false);
     };
@@ -222,15 +227,14 @@ const Dashboard = () => {
     }
   }, [location.search]);
 
-  // Datos de ejemplo
-  const monthlyReservations = [
-    { name: 'Ene', reservas: 12 },
-    { name: 'Feb', reservas: 15 },
-    { name: 'Mar', reservas: 18 },
-    { name: 'Abr', reservas: 14 },
-    { name: 'May', reservas: 20 },
-    { name: 'Jun', reservas: 25 }
-  ];
+  // Usamos datos reales de reservas mensuales
+  const monthlyReservations = reservasMensuales.length > 0 
+    ? reservasMensuales 
+    : [
+        { name: 'Ene', reservas: 0 },
+        { name: 'Feb', reservas: 0 },
+        { name: 'Mar', reservas: 0 }
+      ];
 
   // Datos de ocupación para el gráfico de torta (actualizado dinámicamente)
   const occupancyData = [
@@ -248,26 +252,7 @@ const Dashboard = () => {
     { name: 'Dom', ingresos: 4000000 }
   ];
 
-  const notifications = [
-    {
-      id: 1,
-      type: "reservation",
-      message: "Nueva reserva pendiente de confirmación",
-      time: "Hace 5 minutos"
-    },
-    {
-      id: 2,
-      type: "payment",
-      message: "Pago recibido de María Rodríguez",
-      time: "Hace 30 minutos"
-    },
-    {
-      id: 3,
-      type: "system",
-      message: "Mantenimiento programado para mañana",
-      time: "Hace 1 hora"
-    }
-  ];
+  // Array de notificaciones eliminado
 
   const COLORS = ['#2A9D8F', '#E9C46A', '#F4A261', '#E76F51'];
 
@@ -372,6 +357,47 @@ const Dashboard = () => {
     return Math.round(porcentaje);
   };
 
+  // Función para obtener las reservas mensuales del año actual
+  const obtenerReservasPorMes = (reservas) => {
+    if (!reservas || reservas.length === 0) return [];
+    
+    const añoActual = new Date().getFullYear();
+    const mesActual = new Date().getMonth(); // 0-11
+    
+    // Crear array con meses desde enero hasta el mes actual
+    const mesesData = [
+      { name: 'Ene', reservas: 0 },
+      { name: 'Feb', reservas: 0 },
+      { name: 'Mar', reservas: 0 },
+      { name: 'Abr', reservas: 0 },
+      { name: 'May', reservas: 0 },
+      { name: 'Jun', reservas: 0 },
+      { name: 'Jul', reservas: 0 },
+      { name: 'Ago', reservas: 0 },
+      { name: 'Sep', reservas: 0 },
+      { name: 'Oct', reservas: 0 },
+      { name: 'Nov', reservas: 0 },
+      { name: 'Dic', reservas: 0 }
+    ].slice(0, mesActual + 1); // Solo incluimos hasta el mes actual
+    
+    // Contar reservas por mes (usando fecha_reserva)
+    reservas.forEach(reserva => {
+      // Ignorar reservas canceladas y de otros años
+      if (reserva.estado === 'cancelada') return;
+      
+      const fechaReserva = new Date(reserva.fecha_reserva);
+      const año = fechaReserva.getFullYear();
+      const mes = fechaReserva.getMonth();
+      
+      // Solo contar reservas del año actual y hasta el mes actual
+      if (año === añoActual && mes <= mesActual) {
+        mesesData[mes].reservas += 1;
+      }
+    });
+    
+    return mesesData;
+  };
+
   const renderOverviewTab = () => (
     <>
       {/* KPIs */}
@@ -447,16 +473,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
         <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-lg">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold">Reservas por Mes</h2>
-            <select 
-              className="input h-9 text-sm"
-              value={selectedDateRange}
-              onChange={(e) => setSelectedDateRange(e.target.value)}
-            >
-              <option value="week">Última semana</option>
-              <option value="month">Último mes</option>
-              <option value="year">Último año</option>
-            </select>
+            <h2 className="text-xl font-bold">Reservas por Mes ({new Date().getFullYear()})</h2>
           </div>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
@@ -516,9 +533,9 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Reservas y Alertas */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-lg">
+      {/* Reservas */}
+      <div className="grid grid-cols-1 gap-8">
+        <div className="bg-white rounded-2xl p-6 shadow-lg">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold">Próximas Reservas</h2>
             <div className="flex gap-2">
@@ -529,13 +546,6 @@ const Dashboard = () => {
                 onClick={() => window.open('/admin/crear-alojamiento', '_blank')}
               >
                 Nuevo Reserva
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                icon={<Download size={18} />}
-              >
-                Exportar
               </Button>
             </div>
           </div>
@@ -598,36 +608,6 @@ const Dashboard = () => {
                 )}
               </tbody>
             </table>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl p-6 shadow-lg">
-          <h2 className="text-xl font-bold mb-6">Alertas</h2>
-          <div className="space-y-4">
-            {notifications.map((notification) => (
-              <div 
-                key={notification.id} 
-                className={`flex items-start gap-3 p-4 rounded-xl ${
-                  notification.type === 'reservation'
-                    ? 'bg-blue-50'
-                    : notification.type === 'payment'
-                    ? 'bg-green-50'
-                    : 'bg-yellow-50'
-                }`}
-              >
-                {notification.type === 'reservation' ? (
-                  <Calendar className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                ) : notification.type === 'payment' ? (
-                  <DollarSign className="w-5 h-5 text-green-600 flex-shrink-0" />
-                ) : (
-                  <AlertCircle className="w-5 h-5 text-yellow-600 flex-shrink-0" />
-                )}
-                <div>
-                  <p className="font-medium text-neutral-900">{notification.message}</p>
-                  <p className="text-sm text-neutral-600">{notification.time}</p>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </div>
@@ -1182,6 +1162,10 @@ const Dashboard = () => {
       // Calcular porcentaje de ocupación
       const porcentajeOcupacion = calcularPorcentajeOcupacion(all, spaces);
       setOcupacionPorcentaje(porcentajeOcupacion);
+      
+      // Recalcular reservas mensuales
+      const dataReservasMensuales = obtenerReservasPorMes(all);
+      setReservasMensuales(dataReservasMensuales);
       
       console.log('Ingresos recalculados después de confirmar pago:', ingresos);
       
