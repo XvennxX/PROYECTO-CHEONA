@@ -7,13 +7,13 @@ const Nosotros = () => {
         <h1 className="text-4xl md:text-5xl font-bold mb-8 text-center">Nosotros</h1>
         
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-10">
-            <img 
-              src="/src/assets/nosotros-hero.jpg" 
+          <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-10">            <img 
+              src="http://localhost:8000/static/alojamientos/cabaña/IMG-20250623-WA0053.jpg" 
               alt="Finca Cheona" 
               className="w-full h-80 object-cover object-center"
               onError={(e) => {
-                e.target.src = "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80";
+                console.error("Error cargando la imagen:", e);
+                e.target.src = "http://localhost:8000/static/alojamientos/cabaña/IMG-20250623-WA0060.jpg";
               }}
             />
             
