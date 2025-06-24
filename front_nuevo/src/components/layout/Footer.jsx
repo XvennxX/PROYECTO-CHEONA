@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Instagram } from 'lucide-react';
+import { Facebook, Instagram, TreePine } from 'lucide-react';
+import WhatsAppIcon from '../ui/WhatsAppIcon';
 
 const Footer = () => {
   return (
@@ -9,7 +10,23 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {/* Column 1: About */}
           <div>
-            <h2 className="text-2xl font-bold text-accent mb-4">Finca Cheona</h2>
+            <div className="flex items-center mb-4">
+              <div className="flex items-center space-x-3">
+                <TreePine 
+                  size={32} 
+                  className="text-accent"
+                  strokeWidth={1.5}
+                />
+                <div className="flex flex-col -space-y-1">
+                  <span className="text-2xl font-bold font-heading tracking-wide text-accent leading-tight">
+                    Finca
+                  </span>
+                  <span className="text-xl font-medium font-heading tracking-wide text-accent">
+                    Cheona
+                  </span>
+                </div>
+              </div>
+            </div>
             <p className="text-white/90 mb-6">
               Tu escape perfecto para eventos especiales y experiencias únicas en la naturaleza.
             </p>
@@ -30,6 +47,14 @@ const Footer = () => {
               >
                 <Instagram size={20} className="text-white" />
               </a>
+              <a 
+                href="https://wa.me/573222108528" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="bg-white/10 rounded-full p-2 hover:bg-white/20 transition-colors"
+              >
+                <WhatsAppIcon size={20} className="text-white" />
+              </a>
             </div>
           </div>
 
@@ -38,23 +63,23 @@ const Footer = () => {
             <h2 className="text-2xl font-bold text-accent mb-4">Enlaces Rápidos</h2>
             <ul className="space-y-3">
               <li>
-                <Link to="/eventos" className="text-white/90 hover:text-accent transition-colors">
-                  Eventos
-                </Link>
-              </li>
-              <li>
-                <Link to="/glamping" className="text-white/90 hover:text-accent transition-colors">
-                  Glamping
-                </Link>
-              </li>
-              <li>
                 <Link to="/galeria" className="text-white/90 hover:text-accent transition-colors">
                   Galería
                 </Link>
               </li>
               <li>
-                <Link to="/contacto" className="text-white/90 hover:text-accent transition-colors">
-                  Contacto
+                <Link to="/nosotros" className="text-white/90 hover:text-accent transition-colors">
+                  Nosotros
+                </Link>
+              </li>
+              <li>
+                <Link to="/politica-privacidad" className="text-white/90 hover:text-accent transition-colors">
+                  Política de privacidad
+                </Link>
+              </li>
+              <li>
+                <Link to="/terminos-condiciones" className="text-white/90 hover:text-accent transition-colors">
+                  Términos y condiciones
                 </Link>
               </li>
             </ul>

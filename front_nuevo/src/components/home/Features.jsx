@@ -21,7 +21,7 @@ const Features = () => {
     {
       icon: <Users className="w-16 h-16 text-accent" />,
       title: "Eventos",
-      description: "Capacidad 200 personas"
+      description: "Capacidad 100 personas"
     }
   ];
 

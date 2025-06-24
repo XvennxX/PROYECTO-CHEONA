@@ -38,8 +38,8 @@ const About = () => {
             </ul>
             
             <div className="flex justify-center lg:justify-start">
-              <Button to="/servicios" variant="primary">
-                Descubre nuestros servicios
+              <Button to="/reservar" variant="primary">
+                Reservar ahora
               </Button>
             </div>
           </div>
@@ -48,7 +48,7 @@ const About = () => {
             <div className="space-y-4">
               <div className="rounded-xl overflow-hidden h-64">
                 <img 
-                  src="https://images.pexels.com/photos/2506988/pexels-photo-2506988.jpeg?auto=compress&cs=tinysrgb&w=800" 
+                  src="http://localhost:8000/static/alojamientos/finca/IMG-20250623-WA0106.jpg" 
                   alt="Finca Cheona" 
                   className="w-full h-full object-cover"
                   loading="lazy"
@@ -56,8 +56,8 @@ const About = () => {
               </div>
               <div className="rounded-xl overflow-hidden h-40">
                 <img 
-                  src="https://images.pexels.com/photos/2957862/pexels-photo-2957862.jpeg?auto=compress&cs=tinysrgb&w=800" 
-                  alt="Gastronomía local" 
+                  src="http://localhost:8000/static/alojamientos/glamping/IMG-20250623-WA0074.jpg" 
+                  alt="Glamping" 
                   className="w-full h-full object-cover"
                   loading="lazy"
                 />
@@ -66,16 +66,16 @@ const About = () => {
             <div className="space-y-4 mt-8">
               <div className="rounded-xl overflow-hidden h-40">
                 <img 
-                  src="https://images.pexels.com/photos/13450767/pexels-photo-13450767.jpeg?auto=compress&cs=tinysrgb&w=800" 
-                  alt="Actividades rurales" 
+                  src="http://localhost:8000/static/alojamientos/cabaña/IMG-20250623-WA0054.jpg" 
+                  alt="Cabaña" 
                   className="w-full h-full object-cover"
                   loading="lazy"
                 />
               </div>
               <div className="rounded-xl overflow-hidden h-64">
                 <img 
-                  src="https://images.pexels.com/photos/2901212/pexels-photo-2901212.jpeg?auto=compress&cs=tinysrgb&w=800" 
-                  alt="Entorno natural" 
+                  src="http://localhost:8000/static/alojamientos/finca/IMG-20250623-WA0108.jpg" 
+                  alt="Finca" 
                   className="w-full h-full object-cover"
                   loading="lazy"
                 />
