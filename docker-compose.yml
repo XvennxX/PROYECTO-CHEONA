@@ -1,0 +1,40 @@
+version: '3.8'
+services:
+  backend:
+    build: ./back_cheona_nuevo
+    container_name: cheona-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./back_cheona_nuevo:/app
+    env_file:
+      - ./back_cheona_nuevo/.env
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  frontend:
+    build: ./front_nuevo
+    container_name: cheona-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    container_name: cheona-db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: finca_cheona
+      MYSQL_USER: cheona
+      MYSQL_PASSWORD: cheona123
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: unless-stopped
+
+volumes:
+  db_data:

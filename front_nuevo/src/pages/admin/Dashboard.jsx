@@ -44,6 +44,9 @@ import {
 import Button from '../../components/ui/Button';
 import { reservationService } from '../../services/reservationService';
 import { userService } from '../../services/userService';
+import { getGaleriaImagesByTipo, uploadGaleriaImage } from '../../services/galeriaService';
+
+const API_BASE_URL = 'http://localhost:8000'; // Debe coincidir con la del backend
 
 const Dashboard = () => {
   const location = useLocation();
@@ -53,6 +56,7 @@ const Dashboard = () => {
   const [selectedDateRange, setSelectedDateRange] = useState('week');
   const [activeReservations, setActiveReservations] = useState([]);
   const [futureReservations, setFutureReservations] = useState([]); // NUEVO estado
+  const [ingresosMes, setIngresosMes] = useState(0); // Estado para los ingresos mensuales
   const [showActiveModal, setShowActiveModal] = useState(false);
   const [loadingActive, setLoadingActive] = useState(false);
   const [spaces, setSpaces] = useState([]);
@@ -76,7 +80,14 @@ const Dashboard = () => {
   const [deleteModal, setDeleteModal] = useState({ open: false, id: null });
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
-  
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [uploadTipo, setUploadTipo] = useState('finca');
+  const [uploadFile, setUploadFile] = useState(null);
+  const [uploadMsg, setUploadMsg] = useState("");
+  const [globalMsg, setGlobalMsg] = useState("");
+  const [showGlobalMsg, setShowGlobalMsg] = useState(false);
+  const [galeriaPorTipo, setGaleriaPorTipo] = useState({});
+
   // Redirigir si el usuario no es admin
   React.useEffect(() => {
     if (user?.rol !== 'admin') {
@@ -109,9 +120,30 @@ const Dashboard = () => {
           return start > today && r.estado !== 'cancelada';
         });
         setFutureReservations(future);
+        
+        // Calcular ingresos mensuales a partir de reservas confirmadas
+        const ingresos = calcularIngresosMes(all);
+        setIngresosMes(ingresos);
+        
+        // Log detallado para depuración
+        const hoy = new Date();
+        const primerDiaMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+        const ultimoDiaMes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
+        
+        console.log('Ingresos del mes calculados:', {
+          total: ingresos,
+          mesActual: hoy.toLocaleDateString('es-CO', { month: 'long', year: 'numeric' }),
+          fechaInicio: primerDiaMes.toISOString().split('T')[0],
+          fechaFin: ultimoDiaMes.toISOString().split('T')[0],
+          reservasPagadas: all.filter(r => r.pago_confirmado && 
+            new Date(r.fecha_reserva) >= primerDiaMes && 
+            new Date(r.fecha_reserva) <= ultimoDiaMes).length
+        });
       } catch (e) {
+        console.error('Error al cargar reservas:', e);
         setActiveReservations([]);
         setFutureReservations([]);
+        setIngresosMes(0);
       }
       setLoadingActive(false);
     };
@@ -220,6 +252,31 @@ const Dashboard = () => {
     return undefined;
   };
 
+  // Función para calcular los ingresos del mes actual basado en la fecha de creación de la reserva
+  const calcularIngresosMes = (reservas) => {
+    if (!reservas || reservas.length === 0) return 0;
+    
+    // Obtener el primer y último día del mes actual
+    const hoy = new Date();
+    const primerDiaMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+    const ultimoDiaMes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
+    
+    // Filtrar reservas confirmadas (pagadas) realizadas en el mes actual
+    const reservasPagadasDelMes = reservas.filter(r => {
+      // Verificar si la reserva está pagada/confirmada
+      if (!r.pago_confirmado) return false;
+      
+      // Convertir fecha de reserva a objeto Date
+      const fechaReserva = new Date(r.fecha_reserva);
+      
+      // Verificar si la reserva se realizó en el mes actual
+      return (fechaReserva >= primerDiaMes && fechaReserva <= ultimoDiaMes);
+    });
+    
+    // Sumar los costos totales de las reservas confirmadas
+    return reservasPagadasDelMes.reduce((total, r) => total + (r.costo_total || 0), 0);
+  };
+
   const renderOverviewTab = () => (
     <>
       {/* KPIs */}
@@ -243,7 +300,16 @@ const Dashboard = () => {
             </div>
             <div>
               <h3 className="text-sm text-neutral-600">Ingresos del Mes</h3>
-              <p className="text-2xl font-bold">{formatCurrency(45000000)}</p>
+              <p className="text-2xl font-bold">
+                {loadingActive ? (
+                  <span className="animate-pulse">Calculando...</span>
+                ) : (
+                  formatCurrency(ingresosMes)
+                )}
+              </p>
+              <p className="text-xs text-neutral-500">
+                Reservas realizadas en {new Date().toLocaleDateString('es-CO', { month: 'long', year: 'numeric' })}
+              </p>
             </div>
           </div>
         </div>
@@ -553,6 +619,40 @@ const Dashboard = () => {
           </div>
         </div>
       )}
+
+      {/* Modal para subir imágenes SOLO en Espacios */}
+      {showUploadModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8 text-center">
+            <h3 className="text-lg font-bold mb-4">Subir imagen a galería</h3>
+            <form onSubmit={handleUploadImage} className="space-y-4">
+              <div>
+                <label className="block mb-1 font-medium">Tipo de alojamiento</label>
+                <select value={uploadTipo} onChange={e => setUploadTipo(e.target.value)} className="input w-full">
+                  <option value="finca">Finca</option>
+                  <option value="cabaña">Cabaña</option>
+                  <option value="glamping">Glamping</option>
+                </select>
+              </div>
+              <div>
+                <label className="block mb-1 font-medium">Imagen</label>
+                <input type="file" accept="image/*" onChange={e => setUploadFile(e.target.files[0])} className="input w-full" />
+              </div>
+              <div className="flex gap-2 justify-center mt-4">
+                <Button type="button" variant="outline" onClick={() => setShowUploadModal(false)}>Cancelar</Button>
+                <Button type="submit" variant="primary">Subir</Button>
+              </div>
+            </form>
+            {uploadMsg && <div className="mt-2 text-center text-sm text-green-600">{uploadMsg}</div>}
+          </div>
+        </div>
+      )}
+
+      {showGlobalMsg && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-all animate-fade-in">
+          {globalMsg}
+        </div>
+      )}
     </>
   );
 
@@ -655,6 +755,11 @@ const Dashboard = () => {
 
   const renderSpacesTab = () => (
     <div className="space-y-6">
+      {showGlobalMsg && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-all animate-fade-in">
+          {globalMsg}
+        </div>
+      )}
       {showCreatedMessage && (
         <div className="flex justify-center items-center py-8">
           <div className="bg-green-100 text-green-800 px-6 py-4 rounded-xl text-lg font-semibold shadow">
@@ -678,6 +783,7 @@ const Dashboard = () => {
               variant="outline"
               size="sm"
               icon={<Upload size={18} />}
+              onClick={() => setShowUploadModal(true)}
             >
               Subir Imágenes
             </Button>
@@ -692,12 +798,16 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {spaces.map((space) => (
               <div key={space.id} className="border border-neutral-200 rounded-xl p-4">
-                <div className="aspect-video rounded-lg bg-neutral-100 mb-4">
-                  <img
-                    src={space.imagenes && space.imagenes.length > 0 ? space.imagenes[0] : "https://images.pexels.com/photos/2662816/pexels-photo-2662816.jpeg"}
-                    alt={space.nombre}
-                    className="w-full h-full object-cover rounded-lg"
-                  />
+                <div className="aspect-video rounded-lg bg-neutral-100 mb-4 overflow-hidden relative">
+                  {galeriaPorTipo[space.tipo?.toLowerCase()] && galeriaPorTipo[space.tipo?.toLowerCase()].length > 0 ? (
+                    <Carousel images={galeriaPorTipo[space.tipo?.toLowerCase()]} nombre={space.nombre} />
+                  ) : (
+                    <img
+                      src="https://images.pexels.com/photos/2662816/pexels-photo-2662816.jpeg"
+                      alt={space.nombre}
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                  )}
                 </div>
                 <div className="flex items-start justify-between mb-2">
                   <div>
@@ -777,6 +887,34 @@ const Dashboard = () => {
           </div>
         )}
       </div>
+
+      {/* Modal para subir imágenes SOLO en Espacios */}
+      {showUploadModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8 text-center">
+            <h3 className="text-lg font-bold mb-4">Subir imagen a galería</h3>
+            <form onSubmit={handleUploadImage} className="space-y-4">
+              <div>
+                <label className="block mb-1 font-medium">Tipo de alojamiento</label>
+                <select value={uploadTipo} onChange={e => setUploadTipo(e.target.value)} className="input w-full">
+                  <option value="finca">Finca</option>
+                  <option value="cabaña">Cabaña</option>
+                  <option value="glamping">Glamping</option>
+                </select>
+              </div>
+              <div>
+                <label className="block mb-1 font-medium">Imagen</label>
+                <input type="file" accept="image/*" onChange={e => setUploadFile(e.target.files[0])} className="input w-full" />
+              </div>
+              <div className="flex gap-2 justify-center mt-4">
+                <Button type="button" variant="outline" onClick={() => setShowUploadModal(false)}>Cancelar</Button>
+                <Button type="submit" variant="primary">Subir</Button>
+              </div>
+            </form>
+            {uploadMsg && <div className="mt-2 text-center text-sm text-green-600">{uploadMsg}</div>}
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -926,18 +1064,30 @@ const Dashboard = () => {
     if (!window.confirm('¿Confirmar el pago de esta reserva?')) return;
     try {
       await reservationService.confirmPayment(id_reserva);
-      // Refrescar la lista de reservas futuras
+      
+      // Refrescar todas las reservas
       const all = await reservationService.getAllReservationsWithClient();
+      
+      // Recalcular reservas futuras
       const today = new Date();
       today.setHours(0,0,0,0);
+      
       const future = all.filter(r => {
         const start = new Date(r.fecha_inicio);
         start.setHours(0,0,0,0);
         return start > today && r.estado !== 'cancelada';
       });
       setFutureReservations(future);
+      
+      // Recalcular ingresos mensuales basados en la fecha de creación de la reserva
+      const ingresos = calcularIngresosMes(all);
+      setIngresosMes(ingresos);
+      
+      console.log('Ingresos recalculados después de confirmar pago:', ingresos);
+      
       alert('Pago confirmado correctamente.');
     } catch (e) {
+      console.error('Error al confirmar pago:', e);
       alert('No se pudo confirmar el pago.');
     }
   };
@@ -1000,6 +1150,44 @@ const Dashboard = () => {
   const cancelDeleteAlojamiento = () => {
     setDeleteModal({ open: false, id: null });
   };
+
+  // Handler para subir imagen
+  const handleUploadImage = async (e) => {
+    e.preventDefault();
+    if (!uploadFile) return setUploadMsg("Selecciona una imagen");
+    try {
+      await uploadGaleriaImage(uploadTipo, uploadFile);
+      setGlobalMsg("Imagen subida correctamente");
+      setShowGlobalMsg(true);
+      setShowUploadModal(false);
+      setUploadFile(null);
+      setUploadTipo('finca');
+      setTimeout(() => setShowGlobalMsg(false), 2500);
+    } catch (err) {
+      // Mostrar el mensaje real del backend si existe
+      if (err.response && err.response.data) {
+        setUploadMsg("Error: " + (typeof err.response.data === 'string' ? err.response.data : (err.response.data.detail || JSON.stringify(err.response.data))));
+      } else {
+        setUploadMsg("Error al subir la imagen");
+      }
+    }
+  };
+
+  useEffect(() => {
+    const fetchGaleria = async () => {
+      const tipos = ['finca', 'cabaña', 'glamping'];
+      const result = {};
+      for (const tipo of tipos) {
+        try {
+          result[tipo] = await getGaleriaImagesByTipo(tipo);
+        } catch {
+          result[tipo] = [];
+        }
+      }
+      setGaleriaPorTipo(result);
+    };
+    fetchGaleria();
+  }, []);
 
   return (
     <div className="min-h-screen bg-neutral-50 pt-20">
@@ -1077,5 +1265,61 @@ d-xl transition-colors ${
     </div>
   );
 };
+
+// Carrusel simple para imágenes
+function Carousel({ images, nombre }) {
+  const [index, setIndex] = React.useState(0);
+  if (!images || images.length === 0) return null;
+  const API_BASE_URL = 'http://localhost:8000';
+  const goPrev = (e) => {
+    e.stopPropagation();
+    setIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  };
+  const goNext = (e) => {
+    e.stopPropagation();
+    setIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+  };
+  return (
+    <div className="relative w-full h-full flex items-center justify-center group select-none">
+      <img
+        src={`${API_BASE_URL}${images[index]}`}
+        alt={nombre}
+        className="w-full h-full object-cover rounded-lg transition-all duration-500 shadow-lg"
+        style={{ minHeight: 180, maxHeight: 260 }}
+      />
+      {images.length > 1 && (
+        <>
+          {/* Overlay para mejor contraste */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent rounded-lg pointer-events-none transition-all duration-300" />
+          {/* Flechas */}
+          <button
+            onClick={goPrev}
+            className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-primary hover:text-white text-primary rounded-full p-2 shadow-lg z-10 text-2xl font-bold opacity-0 group-hover:opacity-100 transition-all duration-200"
+            aria-label="Anterior"
+          >
+            &#8592;
+          </button>
+          <button
+            onClick={goNext}
+            className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-primary hover:text-white text-primary rounded-full p-2 shadow-lg z-10 text-2xl font-bold opacity-0 group-hover:opacity-100 transition-all duration-200"
+            aria-label="Siguiente"
+          >
+            &#8594;
+          </button>
+          {/* Indicadores */}
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+            {images.map((_, i) => (
+              <span
+                key={i}
+                className={`inline-block w-3 h-3 rounded-full border-2 ${i === index ? 'bg-green-600 border-white scale-110' : 'bg-white/70 border-green-600'} transition-all duration-200`}
+                style={{ boxShadow: i === index ? '0 0 6px #16a34a' : undefined }}
+              ></span>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 export default Dashboard;

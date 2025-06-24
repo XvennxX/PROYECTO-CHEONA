@@ -19,7 +19,11 @@ def crear_alojamiento(data: AlojamientoCreate, db: Session = Depends(get_db)):
     return alojamiento_service.crear_alojamiento(db, data)
 
 @router.put("/{id}", response_model=Alojamiento)
-def actualizar_alojamiento(id: int, data: AlojamientoUpdate, db: Session = Depends(get_db)):
+def actualizar_alojamiento_put(id: int, data: AlojamientoUpdate, db: Session = Depends(get_db)):
+    return alojamiento_service.actualizar_alojamiento(db, id, data)
+
+@router.patch("/{id}", response_model=Alojamiento)
+def actualizar_alojamiento_patch(id: int, data: AlojamientoUpdate, db: Session = Depends(get_db)):
     return alojamiento_service.actualizar_alojamiento(db, id, data)
 
 @router.delete("/{id}")

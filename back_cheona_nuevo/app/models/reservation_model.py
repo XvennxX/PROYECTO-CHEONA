@@ -1,12 +1,12 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, Union
 from datetime import datetime, date
 
 class ReservationCreate(BaseModel):
     id_cliente: int
     id_alojamiento: int
-    fecha_inicio: datetime
-    fecha_fin: datetime
+    fecha_inicio: Union[str, datetime]  # Acepta string o datetime
+    fecha_fin: Union[str, datetime]     # Acepta string o datetime
     cantidad_personas: int
     metodo_pago: str
     observaciones: Optional[str] = None

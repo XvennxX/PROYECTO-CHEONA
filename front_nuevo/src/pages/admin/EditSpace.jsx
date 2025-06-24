@@ -62,33 +62,71 @@ const EditSpace = () => {
     e.preventDefault();
     setSaving(true);
     try {
-      // Preparar datos para el backend
-      const payload = {
-        nombre: form.nombre,
-        tipo: form.tipo,
-        capacidad: form.capacidad ? Number(form.capacidad) : undefined,
-        precio_por_noche: form.precio_por_noche ? Number(form.precio_por_noche) : undefined,
-        estado: form.estado,
-        descripcion: form.descripcion,
-        imagenes: Array.isArray(form.imagenes) ? form.imagenes.filter(i => i) : [],
-        comodidades: form.comodidades ? form.comodidades.split(',').map(a => a.trim()).filter(Boolean) : [],
-        politicas: form.politicas,
-        servicios_adicionales: form.servicios_adicionales ? form.servicios_adicionales.split(',').map(s => s.trim()).filter(Boolean) : [],
+      // Preparar datos para el backend con más cuidado
+      let payload = {
+        nombre: form.nombre.trim() || undefined,
+        tipo: form.tipo.trim() || undefined,
+        descripcion: form.descripcion.trim() || undefined,
+        estado: form.estado.trim() || undefined,
+        politicas: form.politicas.trim() || undefined
       };
-      // Eliminar campos vacíos para cumplir con el modelo Optional
-      Object.keys(payload).forEach(key => {
-        if (
-          payload[key] === undefined ||
-          (Array.isArray(payload[key]) && payload[key].length === 0) ||
-          payload[key] === ''
-        ) {
-          delete payload[key];
-        }
-      });
-      await reservationService.updateRoom(Number(id), payload);
-      navigate('/admin');
+      
+      // Convertir capacidad a número si existe
+      if (form.capacidad !== '') {
+        payload.capacidad = Number(form.capacidad);
+      }
+      
+      // Convertir precio_por_noche a número si existe
+      if (form.precio_por_noche !== '') {
+        payload.precio_por_noche = Number(form.precio_por_noche);
+      }
+      
+      // Procesar arrays con más cuidado
+      if (form.comodidades && form.comodidades.trim()) {
+        payload.comodidades = form.comodidades.split(',')
+          .map(item => item.trim())
+          .filter(item => item !== '');
+      } else {
+        payload.comodidades = [];
+      }
+      
+      // Manejar imágenes
+      if (Array.isArray(form.imagenes)) {
+        payload.imagenes = form.imagenes.filter(i => i && i.trim() !== '');
+      } else if (typeof form.imagenes === 'string' && form.imagenes.trim()) {
+        payload.imagenes = form.imagenes.split(',')
+          .map(item => item.trim())
+          .filter(item => item !== '');
+      } else {
+        payload.imagenes = [];
+      }
+      
+      // Servicios adicionales
+      if (form.servicios_adicionales && form.servicios_adicionales.trim()) {
+        payload.servicios_adicionales = form.servicios_adicionales.split(',')
+          .map(item => item.trim())
+          .filter(item => item !== '');
+      } else {
+        payload.servicios_adicionales = [];
+      }
+      
+      // Eliminar campos con valores undefined
+      payload = Object.fromEntries(
+        Object.entries(payload).filter(([_, value]) => value !== undefined)
+      );
+      
+      console.log('Datos preparados para enviar:', payload);
+      
+      try {
+        await reservationService.updateRoom(Number(id), payload);
+        navigate('/admin');
+      } catch (error) {
+        console.error('Error detallado:', error);
+        alert(`Error al guardar los cambios: ${error.message || 'Error desconocido'}`);
+      }
     } catch (e) {
-      alert('Error al guardar los cambios');
+      console.error('Error en handleSave:', e);
+      alert('Error al preparar los datos para la actualización');
     } finally {
       setSaving(false);
     }
