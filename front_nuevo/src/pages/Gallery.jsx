@@ -23,6 +23,7 @@ const Gallery = () => {
         const processImages = (imagesList, category) => {
           return imagesList.map(path => {
             // Si ya es una URL completa, usarla directamente
+            // La ruta ya viene con /static/ incluido desde el backend
             const src = path.startsWith('http') ? path : `http://localhost:8000${path}`;
             
             // Extraer un título a partir de la ruta del archivo
@@ -50,17 +51,17 @@ const Gallery = () => {
         // Si hay error, usar algunas imágenes predeterminadas como fallback
         setImages([
           {
-            src: "https://images.pexels.com/photos/2507010/pexels-photo-2507010.jpeg",
+            src: "http://localhost:8000/static/alojamientos/finca/IMG-20250623-WA0056.jpg",
             category: "finca",
             title: "Exterior finca"
           },
           {
-            src: "https://images.pexels.com/photos/2724748/pexels-photo-2724748.jpeg",
+            src: "http://localhost:8000/static/alojamientos/cabaña/IMG-20250623-WA0061.jpg",
             category: "cabaña",
             title: "Interior cabaña"
           },
           {
-            src: "https://images.pexels.com/photos/1579253/pexels-photo-1579253.jpeg",
+            src: "http://localhost:8000/static/alojamientos/glamping/IMG-20250623-WA0059.jpg",
             category: "glamping",
             title: "Vista glamping"
           }
@@ -92,9 +93,13 @@ const Gallery = () => {
       {/* Banner */}
       <div className="relative h-64 md:h-80">
         <img
-          src="https://images.pexels.com/photos/3540375/pexels-photo-3540375.jpeg"
+          src="http://localhost:8000/static/alojamientos/cabaña/IMG-20250623-WA0061.jpg"
           alt="Galería"
           className="w-full h-full object-cover"
+          onError={(e) => {
+            console.error("Error cargando la imagen:", e);
+            e.target.src = "http://localhost:8000/static/alojamientos/cabaña/IMG-20250623-WA0060.jpg";
+          }}
         />
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
           <h1 className="text-white text-4xl md:text-5xl font-bold">Galería</h1>

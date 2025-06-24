@@ -54,11 +54,10 @@ const ChatNotifications = ({ user }) => {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
     }
   }, [mensajes]);
-
   return (
     <div className="p-4 max-w-lg mx-auto">
       <h2 className="text-xl font-bold mb-4 text-primary">
-        Notificaciones de Chat
+        Tus conversaciones
         <span className="bg-accent text-white rounded-full px-2 py-1 text-xs ml-2">
           {unreadCount}
         </span>

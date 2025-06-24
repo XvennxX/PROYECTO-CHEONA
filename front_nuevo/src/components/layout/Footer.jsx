@@ -40,7 +40,7 @@ const Footer = () => {
                 <Facebook size={20} className="text-white" />
               </a>
               <a 
-                href="https://instagram.com" 
+                href="https://www.instagram.com/cheona_glamping/" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="bg-white/10 rounded-full p-2 hover:bg-white/20 transition-colors"
