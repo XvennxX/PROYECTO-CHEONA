@@ -48,18 +48,48 @@ def actualizar_alojamiento(db, alojamiento_id: int, data: AlojamientoUpdate):
     cursor = db.cursor()
     fields = []
     values = []
-    for key, value in data.dict(exclude_unset=True).items():
+    
+    # Extraer solo los campos definidos (no None)
+    data_dict = {k: v for k, v in data.dict(exclude_unset=True).items() if v is not None}
+    
+    # Procesamiento seguro de los campos
+    for key, value in data_dict.items():
+        # Convertir listas a JSON
         if key in ["comodidades", "imagenes", "servicios_adicionales"]:
+            # Asegurarse de que sean listas vacías si vienen como None
+            if value is None:
+                value = []
             value = json.dumps(value)
+        
+        # Asegurarse de que los valores numéricos sean el tipo correcto
+        if key == "capacidad" and value is not None:
+            value = int(value)
+        if key == "precio_por_noche" and value is not None:
+            value = float(value)
+            
         fields.append(f"{key} = %s")
         values.append(value)
+    
+    # Verificar si hay campos para actualizar
     if not fields:
         raise HTTPException(status_code=400, detail="No hay datos para actualizar")
+    
+    # Añadir el ID para la cláusula WHERE
     values.append(alojamiento_id)
+    
+    # Construir y ejecutar la consulta SQL
     sql = f"UPDATE alojamientos SET {', '.join(fields)} WHERE id = %s"
-    cursor.execute(sql, values)
-    db.commit()
-    return get_alojamiento_detalle(db, alojamiento_id)
+    
+    try:
+        cursor.execute(sql, values)
+        db.commit()
+        if cursor.rowcount == 0:
+            raise HTTPException(status_code=404, detail="Alojamiento no encontrado")
+        return get_alojamiento_detalle(db, alojamiento_id)
+    except Exception as e:
+        db.rollback()
+        # Incluir el mensaje de error de MySQL en la respuesta
+        raise HTTPException(status_code=422, detail=f"Error al actualizar alojamiento: {str(e)}")
 
 def eliminar_alojamiento(db, alojamiento_id: int):
     cursor = db.cursor()

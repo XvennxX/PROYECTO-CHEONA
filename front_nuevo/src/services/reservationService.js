@@ -8,15 +8,19 @@ export const reservationService = {
   // Crear una reserva REAL en el backend
   async createReservation(reservation) {
     try {
+      console.log("Enviando datos a API:", reservation);
       const response = await fetch('http://127.0.0.1:8000/reservas/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(reservation)
       });
+      
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.detail || 'Error al crear la reserva');
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Error en la respuesta:", response.status, errorData);
+        throw new Error(errorData.detail || `Error al crear la reserva: ${response.status} ${response.statusText}`);
       }
+      
       return response.json();
     } catch (error) {
       console.error('Error al crear la reserva:', error);
@@ -29,13 +33,30 @@ export const reservationService = {
   },
   async updateRoom(id, data) {
     // Actualiza un alojamiento en el backend
-    const response = await fetch(`http://localhost:8000/alojamientos/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-    if (!response.ok) throw new Error('No se pudo actualizar el alojamiento');
-    return response.json();
+    console.log('Actualizando alojamiento con datos:', JSON.stringify(data, null, 2));
+    try {
+      // Cambiamos de PUT a PATCH para actualizaciones parciales
+      const response = await fetch(`http://localhost:8000/alojamientos/${id}`, {
+        method: 'PATCH',  // Cambiado de PUT a PATCH
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Error al actualizar alojamiento:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorData
+        });
+        throw new Error(errorData.detail || `Error al actualizar alojamiento: ${response.status} ${response.statusText}`);
+      }
+      
+      return response.json();
+    } catch (error) {
+      console.error('Error en updateRoom:', error);
+      throw error;
+    }
   },
   async getReservedDates(idAlojamiento) {
     // Llama a la API real para obtener los rangos reservados
