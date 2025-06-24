@@ -75,7 +75,7 @@ const TerminosCondiciones = () => {
             </p>
             <p>
               Email: cheona_redes@hotmail.com<br />
-              Teléfono: +57 322 210 8528
+              Teléfono: +57 310 481 3073
             </p>
           </div>
         </div>

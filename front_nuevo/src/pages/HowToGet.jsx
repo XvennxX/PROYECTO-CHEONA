@@ -66,15 +66,15 @@ const HowToGet = () => {
             
             <div className="space-y-4">
               <a 
-                href="tel:+573001234567"
+                href="tel:+573104813073"
                 className="flex items-center gap-3 bg-accent-dark/20 p-4 rounded-xl hover:bg-accent-dark/30 transition-colors"
               >
                 <Phone size={20} />
-                +57 300 123 4567
+                +57 310 481 3073
               </a>
               
               <a 
-                href="mailto:contacto@fincacheona.com"
+                href="mailto:cheona_redes@hotmail.com"
                 className="flex items-center gap-3 bg-accent-dark/20 p-4 rounded-xl hover:bg-accent-dark/30 transition-colors"
               >
                 <Mail size={20} />

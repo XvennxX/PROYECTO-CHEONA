@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Instagram, TreePine } from 'lucide-react';
+import { Facebook, Instagram, TreePine, MapPin, Phone, Mail } from 'lucide-react';
 import WhatsAppIcon from '../ui/WhatsAppIcon';
 
 const Footer = () => {
@@ -32,7 +32,7 @@ const Footer = () => {
             </p>
             <div className="flex space-x-4">
               <a 
-                href="https://facebook.com" 
+                href="https://www.facebook.com/fincacheona" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="bg-white/10 rounded-full p-2 hover:bg-white/20 transition-colors"
@@ -48,7 +48,7 @@ const Footer = () => {
                 <Instagram size={20} className="text-white" />
               </a>
               <a 
-                href="https://wa.me/573222108528" 
+                href="https://wa.me/573104813073" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="bg-white/10 rounded-full p-2 hover:bg-white/20 transition-colors"
@@ -90,18 +90,18 @@ const Footer = () => {
             <h2 className="text-2xl font-bold text-accent mb-4">Contacto</h2>
             <ul className="space-y-3">
               <li className="flex items-center text-white/90">
-                <span className="material-icons-outlined mr-2">📍</span>
+                <MapPin size={20} className="text-white mr-2" />
                 <a href="https://maps.app.goo.gl/ruc7fyrHWkiMrenP9" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">
                   Puente Santa Ana, Sasaima-Alban, Taboga, Sasaima, Cundinamarca
                 </a>
               </li>
               <li>
                 <a 
-                  href="tel:+573222108528" 
+                  href="tel:+573104813073" 
                   className="flex items-center text-white/90 hover:text-accent transition-colors"
                 >
-                  <span className="material-icons-outlined mr-2">📞</span>
-                  +57 322 210 8528
+                  <Phone size={20} className="text-white mr-2" />
+                  +57 310 481 3073
                 </a>
               </li>
               <li>
@@ -109,7 +109,7 @@ const Footer = () => {
                   href="mailto:cheona_redes@hotmail.com" 
                   className="flex items-center text-white/90 hover:text-accent transition-colors"
                 >
-                  <span className="material-icons-outlined mr-2">📧</span>
+                  <Mail size={20} className="text-white mr-2" />
                   cheona_redes@hotmail.com
                 </a>
               </li>
