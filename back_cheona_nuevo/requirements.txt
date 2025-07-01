@@ -6,3 +6,6 @@ pydantic
 passlib[bcrypt]
 python-dotenv
 sqlalchemy
+black
+flake8
+isort

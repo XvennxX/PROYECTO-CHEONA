@@ -589,7 +589,6 @@ const Dashboard = () => {
                       </td>
                       <td className="py-3 px-4">
                         <div className="flex gap-2">
-                          <Button variant="outline" size="sm" icon={<Edit2 size={16} />}>Editar</Button>
                           <Button variant="outline" size="sm" className="text-red-600 hover:bg-red-50" icon={<Trash2 size={16} />}>Cancelar</Button>
                           {!(reservation.estado === 'pagada' || reservation.estado === 'paid') && (
                             <Button 
