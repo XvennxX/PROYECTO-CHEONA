@@ -1,6 +1,8 @@
-from sqlalchemy import Column, Integer, String, Float, Text
+from sqlalchemy import Column, Float, Integer, String, Text
 from sqlalchemy.dialects.mysql import JSON
+
 from app.database.connection import Base
+
 
 class AlojamientoORM(Base):
     __tablename__ = "alojamientos"

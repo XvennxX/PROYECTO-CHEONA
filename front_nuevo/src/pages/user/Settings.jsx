@@ -8,13 +8,13 @@ const Settings = () => {
   const [notifications, setNotifications] = useState({
     email: true,
     push: true,
-    marketing: false
+    marketing: false,
   });
   const [deleting, setDeleting] = useState(false); // Nuevo estado para deshabilitar botón
 
   // Función para eliminar la cuenta
   const handleDeleteAccount = async () => {
-    console.log("Intentando eliminar cuenta"); // Depuración
+    console.log('Intentando eliminar cuenta'); // Depuración
     const userToken = token || localStorage.getItem('token'); // <-- Cambia aquí
     if (!userToken) {
       alert('No hay sesión activa. Por favor inicia sesión de nuevo.');
@@ -29,8 +29,8 @@ const Settings = () => {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${userToken}`,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
       let data = null;
       const text = await res.text();

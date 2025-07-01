@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { User, Check, Star, Calendar } from 'lucide-react';
 import Button from './Button';
-import DatePicker from 'react-datepicker';
+import DatePicker, { registerLocale } from 'react-datepicker';
 import { es } from 'date-fns/locale';
-import { registerLocale } from 'react-datepicker';
 
 registerLocale('es', es);
 
@@ -12,7 +11,7 @@ const RoomCard = ({
   room, 
   featured = false,
   showAvailabilityCalendar = false,
-  showCancellationPolicy = false
+  showCancellationPolicy = false,
 }) => {
   const [showCalendar, setShowCalendar] = useState(false);
   const [dateRange, setDateRange] = useState([null, null]);

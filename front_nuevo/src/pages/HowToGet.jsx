@@ -6,7 +6,7 @@ const HowToGet = () => {
   const tips = [
     'Recomendamos llegar durante horas de luz natural',
     'El último tramo es camino rural, conducir con precaución',
-    'Desde Bogotá, tomar la ruta hacia La Mesa, Cundinamarca'
+    'Desde Bogotá, tomar la ruta hacia La Mesa, Cundinamarca',
   ];
 
   return (

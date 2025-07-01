@@ -18,7 +18,7 @@ api.interceptors.response.use(
     // Loguear error o mostrar notificación
     console.error('API Error:', error.response?.data || error.message);
     return Promise.reject(error);
-  }
+  },
 );
 
 // Funciones genéricas para peticiones HTTP

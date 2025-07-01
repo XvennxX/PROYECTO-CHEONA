@@ -13,7 +13,7 @@ const Profile = () => {
     location: 'Bogotá, Colombia',
     bio: 'Amante de la naturaleza y los viajes.',
     joinDate: 'Marzo 2025',
-    totalReservations: 5
+    totalReservations: 5,
   });
   const [deleting, setDeleting] = useState(false);
 
@@ -35,8 +35,8 @@ const Profile = () => {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${userToken}`,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
       let data = null;
       const text = await res.text();

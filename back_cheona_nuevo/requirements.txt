@@ -6,3 +6,12 @@ pydantic
 passlib[bcrypt]
 python-dotenv
 sqlalchemy
+
+# Development dependencies
+flake8
+black
+isort
+mypy
+pylint
+bandit
+pre-commit

@@ -58,12 +58,12 @@ const RegisterForm = ({ onClose }) => {
       const loginResponse = await fetch('http://localhost:8000/api/login', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           email: formData.email,
-          password: formData.password
-        })
+          password: formData.password,
+        }),
       });
 
       if (!loginResponse.ok) {
@@ -84,7 +84,7 @@ const RegisterForm = ({ onClose }) => {
         email: loginData.user.email,
         telefono: loginData.user.telefono,
         documento_identidad: loginData.user.documento_identidad,
-        rol: loginData.user.rol
+        rol: loginData.user.rol,
       }, loginData.access_token, expiresIn, true); // true indica que es una cuenta nueva
       
       onClose();
@@ -99,7 +99,7 @@ const RegisterForm = ({ onClose }) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
 
     // Clear error when user starts typing
@@ -192,7 +192,7 @@ const RegisterForm = ({ onClose }) => {
             </label>
             <div className="relative">
               <input
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 name="password"
                 required
                 className="input text-sm pr-8 py-1.5 px-2"
@@ -215,7 +215,7 @@ const RegisterForm = ({ onClose }) => {
             </label>
             <div className="relative">
               <input
-                type={showConfirmPassword ? "text" : "password"}
+                type={showConfirmPassword ? 'text' : 'password'}
                 name="confirmPassword"
                 required
                 className="input text-sm pr-8 py-1.5 px-2"

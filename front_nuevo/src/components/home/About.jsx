@@ -4,12 +4,12 @@ import { Check } from 'lucide-react';
 
 const About = () => {
   const highlights = [
-    "Casa principal y dos cabañas con encanto",
-    "Ubicación privilegiada en plena naturaleza",
-    "Gastronomía local con productos de temporada",
-    "Actividades al aire libre para todas las edades",
-    "Desconexión digital y reconexión personal",
-    "Personal atento a todos los detalles"
+    'Casa principal y dos cabañas con encanto',
+    'Ubicación privilegiada en plena naturaleza',
+    'Gastronomía local con productos de temporada',
+    'Actividades al aire libre para todas las edades',
+    'Desconexión digital y reconexión personal',
+    'Personal atento a todos los detalles',
   ];
 
   return (

@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
   const [toast, setToast] = useState({
     show: false,
     message: '',
-    type: 'success'
+    type: 'success',
   });
   const [toastQueue, setToastQueue] = useState([]);
 
@@ -66,19 +66,19 @@ export const AuthProvider = ({ children }) => {
       showMultipleToasts([
         {
           message: '¡Cuenta creada con éxito!',
-          type: 'success'
+          type: 'success',
         },
         {
           message: `¡Bienvenido/a a Finca Cheona, ${userData.nombre}!`,
-          type: 'success'
-        }
+          type: 'success',
+        },
       ]);
     } else {
       // Para inicios de sesión normales, solo mostrar mensaje de bienvenida
       setToast({
         show: true,
         message: `¡Bienvenido/a a Finca Cheona, ${userData.nombre}!`,
-        type: 'success'
+        type: 'success',
       });
     }
   };
@@ -101,7 +101,7 @@ export const AuthProvider = ({ children }) => {
         setToast({
           show: true,
           message: nextToast.message,
-          type: nextToast.type
+          type: nextToast.type,
         });
         setToastQueue(toastQueue.slice(1));
       }
@@ -115,7 +115,7 @@ export const AuthProvider = ({ children }) => {
     setToast({
       show: true,
       message: toasts[0].message,
-      type: toasts[0].type
+      type: toasts[0].type,
     });
     
     // Encolar el resto de toasts

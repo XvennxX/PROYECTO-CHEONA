@@ -1,0 +1,79 @@
+name: Backend CI - Python Linting & Testing
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths: 
+      - 'back_cheona_nuevo/**'
+      - '.github/workflows/backend.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths: 
+      - 'back_cheona_nuevo/**'
+      - '.github/workflows/backend.yml'
+
+defaults:
+  run:
+    working-directory: back_cheona_nuevo
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12']
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+        cache-dependency-path: back_cheona_nuevo/requirements.txt
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Run Black (format check)
+      run: black --check --diff .
+      
+    - name: Run isort (import sorting check)
+      run: isort --check-only --diff .
+      
+    - name: Run Flake8 (linting)
+      run: flake8 .
+      
+    - name: Run mypy (type checking)
+      run: mypy .
+      continue-on-error: true  # mypy puede tener muchos warnings inicialmente
+      
+    - name: Run Pylint
+      run: pylint **/*.py
+      continue-on-error: true  # Pylint puede ser muy estricto inicialmente
+      
+    - name: Run Bandit (security check)
+      run: bandit -r . -f json -o bandit-report.json
+      continue-on-error: true
+      
+    - name: Upload Bandit security report
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: bandit-security-report-${{ matrix.python-version }}
+        path: back_cheona_nuevo/bandit-report.json
+        
+    # Opcional: Run tests if you have them
+    - name: Run tests
+      run: |
+        if [ -f "tests/test_example.py" ]; then
+          python -m pytest tests/ -v
+        else
+          echo "No tests found to run"
+        fi
+      continue-on-error: true

@@ -9,7 +9,7 @@ const Contact = () => {
     name: '',
     email: '',
     subject: '',
-    message: ''
+    message: '',
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -20,7 +20,7 @@ const Contact = () => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
   
@@ -42,7 +42,7 @@ const Contact = () => {
         setIsSubmitting(false);
         return;
       }
-      let id_usuario_cliente = user.id_cliente;
+      const id_usuario_cliente = user.id_cliente;
       console.log('user:', user);
       console.log('id_usuario_cliente:', id_usuario_cliente);
       setSuccess(true);
@@ -50,7 +50,7 @@ const Contact = () => {
         name: '',
         email: '',
         subject: '',
-        message: ''
+        message: '',
       });
     } catch (err) {
       setError('No se pudo enviar el mensaje.');

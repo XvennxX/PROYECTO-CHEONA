@@ -1,15 +1,15 @@
-import api from "./api";
+import api from './api';
 
 export async function uploadGaleriaImage(tipo, file) {
   const formData = new FormData();
-  formData.append("tipo", tipo);
-  formData.append("file", file);
+  formData.append('tipo', tipo);
+  formData.append('file', file);
 
   try {
     const response = await api.post(
-      "/galeria/upload-image",
+      '/galeria/upload-image',
       formData,
-      { headers: { "Content-Type": "multipart/form-data" } }
+      { headers: { 'Content-Type': 'multipart/form-data' } },
     );
     // Si la respuesta es texto plano, intenta devolver el texto
     if (typeof response.data === 'string') {

@@ -99,7 +99,7 @@ const Header = () => {
     userMenuItems.unshift({ 
       icon: <LayoutDashboard size={18} />, 
       label: 'Dashboard', 
-      path: '/admin' 
+      path: '/admin', 
     });
   }
 
@@ -254,8 +254,8 @@ const Header = () => {
                     className={`rounded-full px-5 transition-all duration-300 ${
                       !isScrolled && shouldBeTransparent
                         ? isComoLlegar
-                            ? 'border-primary text-primary hover:bg-primary hover:text-white' 
-                            : 'border-white text-white hover:bg-white hover:text-primary' 
+                          ? 'border-primary text-primary hover:bg-primary hover:text-white' 
+                          : 'border-white text-white hover:bg-white hover:text-primary' 
                         : 'hover:bg-primary/10'
                     }`}
                   >

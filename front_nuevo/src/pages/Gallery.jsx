@@ -33,7 +33,7 @@ const Gallery = () => {
             return {
               src,
               category,
-              title: title.charAt(0).toUpperCase() + title.slice(1)
+              title: title.charAt(0).toUpperCase() + title.slice(1),
             };
           });
         };
@@ -42,7 +42,7 @@ const Gallery = () => {
         const allImages = [
           ...processImages(fincaImages, 'finca'),
           ...processImages(cabañaImages, 'cabaña'),
-          ...processImages(glampingImages, 'glamping')
+          ...processImages(glampingImages, 'glamping'),
         ];
 
         setImages(allImages);
@@ -51,20 +51,20 @@ const Gallery = () => {
         // Si hay error, usar algunas imágenes predeterminadas como fallback
         setImages([
           {
-            src: "http://localhost:8000/static/alojamientos/finca/IMG-20250623-WA0056.jpg",
-            category: "finca",
-            title: "Exterior finca"
+            src: 'http://localhost:8000/static/alojamientos/finca/IMG-20250623-WA0056.jpg',
+            category: 'finca',
+            title: 'Exterior finca',
           },
           {
-            src: "http://localhost:8000/static/alojamientos/cabaña/IMG-20250623-WA0061.jpg",
-            category: "cabaña",
-            title: "Interior cabaña"
+            src: 'http://localhost:8000/static/alojamientos/cabaña/IMG-20250623-WA0061.jpg',
+            category: 'cabaña',
+            title: 'Interior cabaña',
           },
           {
-            src: "http://localhost:8000/static/alojamientos/glamping/IMG-20250623-WA0059.jpg",
-            category: "glamping",
-            title: "Vista glamping"
-          }
+            src: 'http://localhost:8000/static/alojamientos/glamping/IMG-20250623-WA0059.jpg',
+            category: 'glamping',
+            title: 'Vista glamping',
+          },
         ]);
       } finally {
         setLoading(false);
@@ -97,8 +97,8 @@ const Gallery = () => {
           alt="Galería"
           className="w-full h-full object-cover"
           onError={(e) => {
-            console.error("Error cargando la imagen:", e);
-            e.target.src = "http://localhost:8000/static/alojamientos/cabaña/IMG-20250623-WA0060.jpg";
+            console.error('Error cargando la imagen:', e);
+            e.target.src = 'http://localhost:8000/static/alojamientos/cabaña/IMG-20250623-WA0060.jpg';
           }}
         />
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center">

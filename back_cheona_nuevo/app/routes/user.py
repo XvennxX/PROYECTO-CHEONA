@@ -1,9 +1,11 @@
 from fastapi import APIRouter, HTTPException, status
-from app.models.user import User, UserUpdate
+
 from app.database.connection import cursor, mydb
+from app.models.user import User, UserUpdate
 from app.services.user_service import hash_password
 
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
+
 
 @router.get("/")
 def get_user(id: int):
@@ -13,6 +15,7 @@ def get_user(id: int):
     """
     cursor.execute(query, (id,))
     return cursor.fetchall()
+
 
 @router.get("/all")
 def get_all_users():
@@ -26,6 +29,7 @@ def get_all_users():
     columns = [col[0] for col in cursor.description]
     return [dict(zip(columns, row)) for row in results]
 
+
 @router.post("/", status_code=status.HTTP_201_CREATED)
 def insert_user(user: User):
     hashed_pw = hash_password(user.password)
@@ -34,14 +38,24 @@ def insert_user(user: User):
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
     """
     try:
-        cursor.execute(insert_query, (
-            user.nombre, user.apellido, user.email,
-            user.telefono, user.documento_identidad, hashed_pw, "client", "activo"
-        ))
+        cursor.execute(
+            insert_query,
+            (
+                user.nombre,
+                user.apellido,
+                user.email,
+                user.telefono,
+                user.documento_identidad,
+                hashed_pw,
+                "client",
+                "activo",
+            ),
+        )
         mydb.commit()
     except Exception as err:
         raise HTTPException(status_code=400, detail=f"Error: {err}")
     return {"message": "Usuario insertado exitosamente"}
+
 
 @router.patch("/{id}")
 def update_user(id: int, user: UserUpdate):
@@ -70,7 +84,9 @@ def update_user(id: int, user: UserUpdate):
         campos.append("rol=%s")
         valores.append(user.rol)
     if not campos:
-        raise HTTPException(status_code=400, detail="No se enviaron campos para actualizar")
+        raise HTTPException(
+            status_code=400, detail="No se enviaron campos para actualizar"
+        )
     update_query = f"UPDATE cliente SET {', '.join(campos)} WHERE id_cliente=%s"
     valores.append(id)
     try:
@@ -81,6 +97,7 @@ def update_user(id: int, user: UserUpdate):
     except Exception as err:
         raise HTTPException(status_code=400, detail=f"Error al actualizar: {err}")
     return {"message": "Usuario actualizado", "id": id}
+
 
 @router.delete("/{id}")
 def delete_user(id: int):
@@ -94,4 +111,3 @@ def delete_user(id: int):
     except Exception as err:
         raise HTTPException(status_code=400, detail=f"Error al eliminar: {err}")
     return {"message": f"Usuario con id {id} marcado como inactivo"}
-

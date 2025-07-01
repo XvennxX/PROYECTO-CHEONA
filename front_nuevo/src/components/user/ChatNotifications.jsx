@@ -41,7 +41,7 @@ const ChatNotifications = ({ user }) => {
     await chatService.enviarMensaje({
       id_conversacion: chatAbierto,
       remitente,
-      mensaje: nuevoMensaje
+      mensaje: nuevoMensaje,
     });
     setNuevoMensaje('');
     // Refrescar mensajes
@@ -101,13 +101,13 @@ const ChatNotifications = ({ user }) => {
                   className={`flex flex-col ${msg.remitente === user.rol ? 'items-end' : 'items-start'}`}
                 >
                   <div className={`px-4 py-2 rounded-2xl max-w-xs break-words shadow-sm ${msg.remitente === user.rol ? 'bg-primary text-white' : 'bg-neutral-100 text-neutral-800'}`}
-                       style={{ opacity: msg.leido ? 0.7 : 1 }}>
+                    style={{ opacity: msg.leido ? 0.7 : 1 }}>
                     <span className="text-xs font-semibold">{msg.remitente}</span>
                     <div>{msg.mensaje}</div>
                     {Boolean(msg.leido) && <span className="text-[10px] text-neutral-500 ml-2">(leído)</span>}
                   </div>
                 </div>
-            ))}
+              ))}
             <div ref={chatEndRef} />
           </div>
           <form onSubmit={enviarMensaje} className="flex gap-2 mt-2">

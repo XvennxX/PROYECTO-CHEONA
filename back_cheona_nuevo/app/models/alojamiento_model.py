@@ -1,5 +1,7 @@
-from pydantic import BaseModel
 from typing import List, Optional
+
+from pydantic import BaseModel
+
 
 class AlojamientoBase(BaseModel):
     nombre: str
@@ -13,8 +15,10 @@ class AlojamientoBase(BaseModel):
     servicios_adicionales: Optional[List[str]] = []
     politicas: Optional[str] = ""
 
+
 class AlojamientoCreate(AlojamientoBase):
     pass
+
 
 class AlojamientoUpdate(BaseModel):
     nombre: Optional[str]
@@ -28,9 +32,9 @@ class AlojamientoUpdate(BaseModel):
     servicios_adicionales: Optional[List[str]]
     politicas: Optional[str]
 
+
 class Alojamiento(AlojamientoBase):
     id: int
 
     class Config:
         orm_mode = True
-    

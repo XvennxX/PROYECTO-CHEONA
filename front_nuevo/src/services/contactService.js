@@ -11,7 +11,7 @@ export const contactService = {
           resolve({
             data: null,
             status: 200,
-            message: 'Mensaje enviado correctamente. Nos pondremos en contacto contigo pronto.'
+            message: 'Mensaje enviado correctamente. Nos pondremos en contacto contigo pronto.',
           });
         }, 800);
       });
@@ -19,5 +19,5 @@ export const contactService = {
       console.error('Error al enviar formulario de contacto:', error);
       return null;
     }
-  }
+  },
 };

@@ -1,0 +1,32 @@
+# Prettier ignore file
+
+# Compiled output
+/dist
+/build
+
+# Dependencies
+node_modules
+
+# Generated files
+*.log
+*.cache
+.DS_Store
+
+# Build artifacts
+coverage/
+.nyc_output/
+
+# Package lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Environment files
+.env*
+
+# Tailwind output
+styles.css
+
+# Documentation
+README.md
+CHANGELOG.md

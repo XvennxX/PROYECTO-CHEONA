@@ -8,16 +8,16 @@ export const reservationService = {
   // Crear una reserva REAL en el backend
   async createReservation(reservation) {
     try {
-      console.log("Enviando datos a API:", reservation);
+      console.log('Enviando datos a API:', reservation);
       const response = await fetch('http://127.0.0.1:8000/reservas/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(reservation)
+        body: JSON.stringify(reservation),
       });
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        console.error("Error en la respuesta:", response.status, errorData);
+        console.error('Error en la respuesta:', response.status, errorData);
         throw new Error(errorData.detail || `Error al crear la reserva: ${response.status} ${response.statusText}`);
       }
       
@@ -39,7 +39,7 @@ export const reservationService = {
       const response = await fetch(`http://localhost:8000/alojamientos/${id}`, {
         method: 'PATCH',  // Cambiado de PUT a PATCH
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
       
       if (!response.ok) {
@@ -47,7 +47,7 @@ export const reservationService = {
         console.error('Error al actualizar alojamiento:', {
           status: response.status,
           statusText: response.statusText,
-          errorData
+          errorData,
         });
         throw new Error(errorData.detail || `Error al actualizar alojamiento: ${response.status} ${response.statusText}`);
       }
@@ -87,7 +87,7 @@ export const reservationService = {
     const response = await fetch(`http://localhost:8000/reservas/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     });
     if (!response.ok) throw new Error('No se pudo actualizar la reserva');
     return response.json();
@@ -104,7 +104,7 @@ export const reservationService = {
     // Confirma el pago de una reserva en el backend
     const response = await fetch(`http://localhost:8000/reservas/${id}/confirmar-pago`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
     });
     if (!response.ok) throw new Error('No se pudo confirmar el pago');
     return response.json();
@@ -120,7 +120,7 @@ export const reservationService = {
     const response = await fetch('http://localhost:8000/alojamientos/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(alojamiento)
+      body: JSON.stringify(alojamiento),
     });
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));

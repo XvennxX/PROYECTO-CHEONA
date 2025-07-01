@@ -8,8 +8,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '/src/main.tsx': '/src/main.jsx'
-    }
+      '/src/main.tsx': '/src/main.jsx',
+    },
   },
   build: {
     target: 'esnext',
@@ -19,12 +19,12 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
-          ui: ['lucide-react']
-        }
-      }
-    }
+          ui: ['lucide-react'],
+        },
+      },
+    },
   },
   server: {
-    port: 5000
+    port: 5000,
   },
 });

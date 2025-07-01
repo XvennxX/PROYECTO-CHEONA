@@ -13,7 +13,7 @@ const FullPropertySection = () => {
     'Piscina y áreas de recreación',
     'Estacionamiento privado',
     'Personal de servicio incluido',
-    'Actividades organizadas disponibles'
+    'Actividades organizadas disponibles',
   ];
 
   const additionalServices = [
@@ -21,7 +21,7 @@ const FullPropertySection = () => {
     'Decoración para eventos',
     'Actividades guiadas',
     'Transporte desde/hacia aeropuerto',
-    'Masajes y tratamientos de spa'
+    'Masajes y tratamientos de spa',
   ];
 
   return (

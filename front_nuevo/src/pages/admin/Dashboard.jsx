@@ -24,7 +24,7 @@ import {
   FileText,
   Upload,
   Star,
-  Save
+  Save,
 } from 'lucide-react';
 import {
   BarChart,
@@ -39,7 +39,7 @@ import {
   Cell,
   LineChart,
   Line,
-  ResponsiveContainer
+  ResponsiveContainer,
 } from 'recharts';
 import Button from '../../components/ui/Button';
 import { reservationService } from '../../services/reservationService';
@@ -75,7 +75,7 @@ const Dashboard = () => {
     precio_por_noche: '',
     imagenes: '',
     servicios_adicionales: '',
-    politicas: ''
+    politicas: '',
   });
   const [creatingSpace, setCreatingSpace] = useState(false);
   const [showCreatedMessage, setShowCreatedMessage] = useState(false);
@@ -86,8 +86,8 @@ const Dashboard = () => {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [uploadTipo, setUploadTipo] = useState('finca');
   const [uploadFile, setUploadFile] = useState(null);
-  const [uploadMsg, setUploadMsg] = useState("");
-  const [globalMsg, setGlobalMsg] = useState("");
+  const [uploadMsg, setUploadMsg] = useState('');
+  const [globalMsg, setGlobalMsg] = useState('');
   const [showGlobalMsg, setShowGlobalMsg] = useState(false);
   const [galeriaPorTipo, setGaleriaPorTipo] = useState({});
 
@@ -151,7 +151,7 @@ const Dashboard = () => {
           fechaFin: ultimoDiaMes.toISOString().split('T')[0],
           reservasPagadas: all.filter(r => r.pago_confirmado && 
             new Date(r.fecha_reserva) >= primerDiaMes && 
-            new Date(r.fecha_reserva) <= ultimoDiaMes).length
+            new Date(r.fecha_reserva) <= ultimoDiaMes).length,
         });
       } catch (e) {
         console.error('Error al cargar reservas:', e);
@@ -231,15 +231,15 @@ const Dashboard = () => {
   const monthlyReservations = reservasMensuales.length > 0 
     ? reservasMensuales 
     : [
-        { name: 'Ene', reservas: 0 },
-        { name: 'Feb', reservas: 0 },
-        { name: 'Mar', reservas: 0 }
-      ];
+      { name: 'Ene', reservas: 0 },
+      { name: 'Feb', reservas: 0 },
+      { name: 'Mar', reservas: 0 },
+    ];
 
   // Datos de ocupación para el gráfico de torta (actualizado dinámicamente)
   const occupancyData = [
     { name: 'Ocupadas', value: ocupacionPorcentaje },
-    { name: 'Disponibles', value: 100 - ocupacionPorcentaje }
+    { name: 'Disponibles', value: 100 - ocupacionPorcentaje },
   ];
 
   const weeklyIncome = [
@@ -249,7 +249,7 @@ const Dashboard = () => {
     { name: 'Jue', ingresos: 3500000 },
     { name: 'Vie', ingresos: 4200000 },
     { name: 'Sáb', ingresos: 4800000 },
-    { name: 'Dom', ingresos: 4000000 }
+    { name: 'Dom', ingresos: 4000000 },
   ];
 
   // Array de notificaciones eliminado
@@ -260,7 +260,7 @@ const Dashboard = () => {
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
       currency: 'COP',
-      minimumFractionDigits: 0
+      minimumFractionDigits: 0,
     }).format(value);
   };
 
@@ -336,7 +336,7 @@ const Dashboard = () => {
       if (inicioEnMes > ultimoDiaMes || finEnMes < primerDiaMes) return;
       
       // Contar cada día ocupado
-      let currentDate = new Date(inicioEnMes);
+      const currentDate = new Date(inicioEnMes);
       while (currentDate <= finEnMes) {
         const idAlojamiento = reserva.id_alojamiento || reserva.alojamiento_id;
         if (diasOcupados[idAlojamiento]) {
@@ -377,7 +377,7 @@ const Dashboard = () => {
       { name: 'Sep', reservas: 0 },
       { name: 'Oct', reservas: 0 },
       { name: 'Nov', reservas: 0 },
-      { name: 'Dic', reservas: 0 }
+      { name: 'Dic', reservas: 0 },
     ].slice(0, mesActual + 1); // Solo incluimos hasta el mes actual
     
     // Contar reservas por mes (usando fecha_reserva)
@@ -577,14 +577,14 @@ const Dashboard = () => {
                           reservation.estado === 'pagada' || reservation.estado === 'paid'
                             ? 'bg-green-100 text-green-800'
                             : reservation.estado === 'pendiente' || reservation.estado === 'pending'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-blue-100 text-blue-800'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-blue-100 text-blue-800'
                         }`}>
                           {reservation.estado === 'pagada' || reservation.estado === 'paid'
                             ? 'Pagado'
                             : reservation.estado === 'pendiente' || reservation.estado === 'pending'
-                            ? 'Pendiente'
-                            : 'Confirmado'}
+                              ? 'Pendiente'
+                              : 'Confirmado'}
                         </span>
                       </td>
                       <td className="py-3 px-4">
@@ -902,11 +902,11 @@ const Dashboard = () => {
                     space.estado === 'available' 
                       ? 'bg-green-100 text-green-800'
                       : space.estado === 'occupied'
-                      ? 'bg-red-100 text-red-800'
-                      : 'bg-yellow-100 text-yellow-800'
+                        ? 'bg-red-100 text-red-800'
+                        : 'bg-yellow-100 text-yellow-800'
                   }`}>
                     {space.estado === 'available' ? 'Disponible' : 
-                     space.estado === 'occupied' ? 'Ocupado' : 'Mantenimiento'}
+                      space.estado === 'occupied' ? 'Ocupado' : 'Mantenimiento'}
                   </span>
                 </div>
                 <div className="text-neutral-700 mb-2 text-sm line-clamp-2">{space.descripcion}</div>
@@ -1195,7 +1195,7 @@ const Dashboard = () => {
       });
       setShowNewSpaceModal(false);
       setNewSpace({
-        nombre: '', estado: 'available', capacidad: '', tipo: '', descripcion: '', comodidades: '', precio_por_noche: '', imagenes: '', servicios_adicionales: '', politicas: ''
+        nombre: '', estado: 'available', capacidad: '', tipo: '', descripcion: '', comodidades: '', precio_por_noche: '', imagenes: '', servicios_adicionales: '', politicas: '',
       });
       // Refrescar lista
       const data = await reservationService.getRooms();
@@ -1238,10 +1238,10 @@ const Dashboard = () => {
   // Handler para subir imagen
   const handleUploadImage = async (e) => {
     e.preventDefault();
-    if (!uploadFile) return setUploadMsg("Selecciona una imagen");
+    if (!uploadFile) return setUploadMsg('Selecciona una imagen');
     try {
       await uploadGaleriaImage(uploadTipo, uploadFile);
-      setGlobalMsg("Imagen subida correctamente");
+      setGlobalMsg('Imagen subida correctamente');
       setShowGlobalMsg(true);
       setShowUploadModal(false);
       setUploadFile(null);
@@ -1250,9 +1250,9 @@ const Dashboard = () => {
     } catch (err) {
       // Mostrar el mensaje real del backend si existe
       if (err.response && err.response.data) {
-        setUploadMsg("Error: " + (typeof err.response.data === 'string' ? err.response.data : (err.response.data.detail || JSON.stringify(err.response.data))));
+        setUploadMsg('Error: ' + (typeof err.response.data === 'string' ? err.response.data : (err.response.data.detail || JSON.stringify(err.response.data))));
       } else {
-        setUploadMsg("Error al subir la imagen");
+        setUploadMsg('Error al subir la imagen');
       }
     }
   };
@@ -1283,10 +1283,10 @@ const Dashboard = () => {
               onClick={() => setActiveTab('overview')}
               className={`flex items-center gap-2 px-4 py-2 rounde
 d-xl transition-colors ${
-                activeTab === 'overview'
-                  ? 'bg-primary text-white'
-                  : 'hover:bg-neutral-100'
-              }`}
+    activeTab === 'overview'
+      ? 'bg-primary text-white'
+      : 'hover:bg-neutral-100'
+    }`}
             >
               <BarChartIcon size={20} />
               <span>Vista General</span>

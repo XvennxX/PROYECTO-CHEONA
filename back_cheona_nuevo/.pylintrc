@@ -1,0 +1,56 @@
+[MASTER]
+init-hook='import sys; sys.path.append(".")'
+load-plugins=pylint.extensions.docparams
+
+[MESSAGES CONTROL]
+disable=
+    C0114,  # missing-module-docstring
+    C0115,  # missing-class-docstring
+    C0116,  # missing-function-docstring
+    R0903,  # too-few-public-methods (for Pydantic models)
+    R0913,  # too-many-arguments
+    W0613,  # unused-argument
+    C0103,  # invalid-name (for variables like 'db')
+    R0801,  # duplicate-code
+
+[FORMAT]
+max-line-length=88
+good-names=
+    i,
+    j,
+    k,
+    ex,
+    Run,
+    _,
+    db,
+    id,
+    pk
+
+[DESIGN]
+max-args=7
+max-locals=15
+max-returns=6
+max-branches=12
+max-statements=50
+max-parents=7
+max-attributes=10
+min-public-methods=1
+max-public-methods=20
+
+[SIMILARITIES]
+min-similarity-lines=4
+ignore-comments=yes
+ignore-docstrings=yes
+ignore-imports=no
+
+[IMPORTS]
+known-third-party=
+    fastapi,
+    pydantic,
+    sqlalchemy,
+    passlib,
+    jose,
+    uvicorn
+
+[EXCEPTIONS]
+overgeneral-exceptions=Exception

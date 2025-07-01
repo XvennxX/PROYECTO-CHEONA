@@ -15,7 +15,7 @@ const CrearAlojamiento = () => {
     precio_por_noche: '',
     imagenes: '',
     servicios_adicionales: '',
-    politicas: ''
+    politicas: '',
   });
   const [creatingSpace, setCreatingSpace] = useState(false);
   const [success, setSuccess] = useState(false);

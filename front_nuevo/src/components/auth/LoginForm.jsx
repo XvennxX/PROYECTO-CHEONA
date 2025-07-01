@@ -24,12 +24,12 @@ const LoginForm = ({ onClose }) => {
       const response = await fetch('http://localhost:8000/api/login', { // Cambia la URL si es necesario
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           email: formData.email,
-          password: formData.password
-        })
+          password: formData.password,
+        }),
       });
 
       if (!response.ok) {
@@ -51,7 +51,7 @@ const LoginForm = ({ onClose }) => {
         email: userData.user.email,
         telefono: userData.user.telefono,
         documento_identidad: userData.user.documento_identidad,
-        rol: userData.user.rol
+        rol: userData.user.rol,
       }, userData.access_token, expiresIn);
       
       // Cerrar modal de login
@@ -67,7 +67,7 @@ const LoginForm = ({ onClose }) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
     
     if (error) setError(null);
@@ -102,7 +102,7 @@ const LoginForm = ({ onClose }) => {
         </label>
         <div className="relative">
           <input
-            type={showPassword ? "text" : "password"}
+            type={showPassword ? 'text' : 'password'}
             name="password"
             required
             className="input text-base pr-10"

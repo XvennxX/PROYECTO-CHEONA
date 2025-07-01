@@ -5,7 +5,7 @@ import { addDays, formatDateLong, isSameDay } from '../../utils/dates';
 import { reservationService } from '../../services/reservationService';
 import Button from '../ui/Button';
 import { Home, Tent, Castle, ChevronLeft, ChevronRight, Users, Check, Calendar, Loader } from 'lucide-react';
-import "react-datepicker/dist/react-datepicker.css";
+import 'react-datepicker/dist/react-datepicker.css';
 import { useAuth } from '../auth/AuthContext';
 import Carousel from '../ui/Carousel';
 import { getGaleriaImagesByTipo } from '../../services/galeriaService';
@@ -105,7 +105,7 @@ const ReservationForm = ({ preselectedType = null }) => {
   function getAllReservedDays(ranges) {
     const days = [];
     ranges.forEach(({ start, end }) => {
-      let current = new Date(start);
+      const current = new Date(start);
       const last = new Date(end);
       while (current <= last) {
         days.push(new Date(current));
@@ -143,12 +143,12 @@ const ReservationForm = ({ preselectedType = null }) => {
         fecha_inicio: formatDate(startDate),
         fecha_fin: formatDate(endDate),
         cantidad_personas: guests,
-        metodo_pago: "efectivo",
-        observaciones: formData.specialRequests || "",
-        costo_total: totalCalculado.total
+        metodo_pago: 'efectivo',
+        observaciones: formData.specialRequests || '',
+        costo_total: totalCalculado.total,
       };
       
-      console.log("Enviando datos de reserva:", reservationData);
+      console.log('Enviando datos de reserva:', reservationData);
       
       await reservationService.createReservation(reservationData);
       alert('¡Reserva realizada con éxito!');
@@ -159,7 +159,7 @@ const ReservationForm = ({ preselectedType = null }) => {
       setAddCleaning(false);
       
     } catch (error) {
-      console.error("Error completo:", error);
+      console.error('Error completo:', error);
       alert(error.message || 'Error al crear la reserva');
     }
     setLoading(false);
@@ -170,7 +170,7 @@ const ReservationForm = ({ preselectedType = null }) => {
       style: 'currency',
       currency: 'COP',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(value);
   };
 
@@ -238,7 +238,7 @@ const ReservationForm = ({ preselectedType = null }) => {
       cleaningPrice,
       isCabanaOrGlamping,
       isFincaCompleta,
-      total: baseTotal + additionalGuestsTotal + breakfastTotal + cleaningTotal
+      total: baseTotal + additionalGuestsTotal + breakfastTotal + cleaningTotal,
     };
   };
 
@@ -247,7 +247,7 @@ const ReservationForm = ({ preselectedType = null }) => {
     decreaseMonth,
     increaseMonth,
     prevMonthButtonDisabled,
-    nextMonthButtonDisabled
+    nextMonthButtonDisabled,
   }) => (
     <div className="flex items-center justify-between px-4 py-2">
       <button
@@ -363,18 +363,18 @@ const ReservationForm = ({ preselectedType = null }) => {
                     'finca': [
                       'https://images.pexels.com/photos/2091166/pexels-photo-2091166.jpeg',
                       'https://images.pexels.com/photos/2662816/pexels-photo-2662816.jpeg',
-                      'https://images.pexels.com/photos/106400/pexels-photo-106400.jpeg'
+                      'https://images.pexels.com/photos/106400/pexels-photo-106400.jpeg',
                     ],
                     'cabaña': [
                       'https://images.pexels.com/photos/731082/pexels-photo-731082.jpeg',
                       'https://images.pexels.com/photos/46792/the-hut-wooden-hut-ref-hut-shelter-46792.jpeg',
-                      'https://images.pexels.com/photos/210137/pexels-photo-210137.jpeg'
+                      'https://images.pexels.com/photos/210137/pexels-photo-210137.jpeg',
                     ],
                     'glamping': [
                       'https://images.pexels.com/photos/2422968/pexels-photo-2422968.jpeg',
                       'https://images.pexels.com/photos/2516423/pexels-photo-2516423.jpeg',
-                      'https://images.pexels.com/photos/6271625/pexels-photo-6271625.jpeg'
-                    ]
+                      'https://images.pexels.com/photos/6271625/pexels-photo-6271625.jpeg',
+                    ],
                   };
                   
                   // Si tenemos imágenes de la galería, convertirlas a URLs absolutas
@@ -479,47 +479,47 @@ const ReservationForm = ({ preselectedType = null }) => {
                 {/* Selector de huéspedes - oculto para Cabaña Miyacure y Glamping Rústico */}
                 {!(selectedSpace?.nombre?.toLowerCase().includes('miyacure') || 
                    selectedSpace?.nombre?.toLowerCase().includes('glamping rústico')) ? (
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">
                       Número de huéspedes
-                    </label>
-                    <select
-                      value={guests}
-                      onChange={(e) => setGuests(parseInt(e.target.value))}
-                      className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                    >
-                      {selectedSpace?.tipo?.toLowerCase() === 'full' || selectedSpace?.tipo?.toLowerCase() === 'finca'
-                        ? [...Array(8)].map((_, i) => (
+                      </label>
+                      <select
+                        value={guests}
+                        onChange={(e) => setGuests(parseInt(e.target.value))}
+                        className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      >
+                        {selectedSpace?.tipo?.toLowerCase() === 'full' || selectedSpace?.tipo?.toLowerCase() === 'finca'
+                          ? [...Array(8)].map((_, i) => (
                             <option key={i + 8} value={i + 8}>
                               {i + 8} huéspedes
                             </option>
                           ))
-                        : [...Array(selectedSpace?.capacidad_maxima)].map((_, i) => (
+                          : [...Array(selectedSpace?.capacidad_maxima)].map((_, i) => (
                             <option key={i + 1} value={i + 1}>
                               {i + 1} {i === 0 ? 'huésped' : 'huéspedes'}
                             </option>
                           ))}
-                    </select>
+                      </select>
                     
-                    {(selectedSpace?.tipo?.toLowerCase() === 'full' || selectedSpace?.tipo?.toLowerCase() === 'finca') && (
-                      <p className="mt-2 text-sm text-primary-dark font-medium">
+                      {(selectedSpace?.tipo?.toLowerCase() === 'full' || selectedSpace?.tipo?.toLowerCase() === 'finca') && (
+                        <p className="mt-2 text-sm text-primary-dark font-medium">
                         Política: Para reservar la finca completa se requiere un mínimo de 8 personas.
-                      </p>
-                    )}
-                  </div>
-                ) : (
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Número de huéspedes
-                    </label>
-                    <div className="w-full px-4 py-3 rounded-xl border border-neutral-200 bg-neutral-50">
-                      <span className="text-neutral-700">2 huéspedes</span>
+                        </p>
+                      )}
                     </div>
-                    <p className="mt-2 text-sm text-primary-dark font-medium">
+                  ) : (
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 mb-2">
+                      Número de huéspedes
+                      </label>
+                      <div className="w-full px-4 py-3 rounded-xl border border-neutral-200 bg-neutral-50">
+                        <span className="text-neutral-700">2 huéspedes</span>
+                      </div>
+                      <p className="mt-2 text-sm text-primary-dark font-medium">
                       Este alojamiento tiene capacidad fija para 2 personas.
-                    </p>
-                  </div>
-                )}
+                      </p>
+                    </div>
+                  )}
 
                 {startDate && endDate && (
                   <>
@@ -623,7 +623,7 @@ const ReservationForm = ({ preselectedType = null }) => {
                               <span className="text-neutral-600">
                                 {calculateTotal().isCabanaOrGlamping 
                                   ? `Servicio de limpieza (${calculateTotal().nights} días)`
-                                  : "Servicio de limpieza"
+                                  : 'Servicio de limpieza'
                                 }
                               </span>
                               <span>{formatCurrency(calculateTotal().cleaningTotal)}</span>

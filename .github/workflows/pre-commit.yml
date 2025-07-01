@@ -1,0 +1,33 @@
+name: Pre-commit Hooks
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+        
+    - name: Install pre-commit
+      run: pip install pre-commit
+      
+    - name: Install pre-commit hooks
+      run: |
+        cd back_cheona_nuevo
+        pre-commit install
+        
+    - name: Run pre-commit on all files
+      run: |
+        cd back_cheona_nuevo
+        pre-commit run --all-files
+      continue-on-error: true

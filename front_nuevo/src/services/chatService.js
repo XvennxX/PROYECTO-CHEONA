@@ -20,5 +20,5 @@ export const chatService = {
   },
   async marcarLeidos(id_conversacion, remitente) {
     return apiService.post(`/chat/marcar_leidos/${id_conversacion}?remitente=${remitente}`);
-  }
+  },
 };

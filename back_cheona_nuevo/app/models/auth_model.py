@@ -1,8 +1,10 @@
 from pydantic import BaseModel
 
+
 class LoginRequest(BaseModel):
     email: str
     password: str
+
 
 class UserResponse(BaseModel):
     id_cliente: int
@@ -12,6 +14,7 @@ class UserResponse(BaseModel):
     telefono: str
     documento_identidad: str
     rol: str
+
 
 class LoginResponse(BaseModel):
     access_token: str

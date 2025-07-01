@@ -7,44 +7,44 @@ const Help = () => {
 
   const faqs = [
     {
-      category: "Reservas",
+      category: 'Reservas',
       questions: [
         {
-          q: "¿Cómo puedo modificar mi reserva?",
-          a: "Puedes modificar tu reserva hasta 48 horas antes de la fecha de llegada desde la sección 'Mis Reservas'."
+          q: '¿Cómo puedo modificar mi reserva?',
+          a: "Puedes modificar tu reserva hasta 48 horas antes de la fecha de llegada desde la sección 'Mis Reservas'.",
         },
         {
-          q: "¿Cuál es la política de cancelación?",
-          a: "Ofrecemos cancelación gratuita hasta 7 días antes de la fecha de llegada. Después de este período, se aplicará un cargo del 50%."
-        }
-      ]
+          q: '¿Cuál es la política de cancelación?',
+          a: 'Ofrecemos cancelación gratuita hasta 7 días antes de la fecha de llegada. Después de este período, se aplicará un cargo del 50%.',
+        },
+      ],
     },
     {
-      category: "Pagos",
+      category: 'Pagos',
       questions: [
         {
-          q: "¿Qué métodos de pago aceptan?",
-          a: "Aceptamos tarjetas de crédito/débito, transferencias bancarias y PSE."
+          q: '¿Qué métodos de pago aceptan?',
+          a: 'Aceptamos tarjetas de crédito/débito, transferencias bancarias y PSE.',
         },
         {
-          q: "¿Cuándo se realiza el cargo?",
-          a: "El cargo se realiza en el momento de la reserva para garantizar tu estadía."
-        }
-      ]
+          q: '¿Cuándo se realiza el cargo?',
+          a: 'El cargo se realiza en el momento de la reserva para garantizar tu estadía.',
+        },
+      ],
     },
     {
-      category: "Servicios",
+      category: 'Servicios',
       questions: [
         {
-          q: "¿Qué incluye el desayuno?",
-          a: "El desayuno incluye opciones continentales y típicas, servido de 7:00 a 10:00 AM."
+          q: '¿Qué incluye el desayuno?',
+          a: 'El desayuno incluye opciones continentales y típicas, servido de 7:00 a 10:00 AM.',
         },
         {
-          q: "¿Tienen servicio de transporte?",
-          a: "Ofrecemos servicio de transporte desde/hacia el aeropuerto con cargo adicional."
-        }
-      ]
-    }
+          q: '¿Tienen servicio de transporte?',
+          a: 'Ofrecemos servicio de transporte desde/hacia el aeropuerto con cargo adicional.',
+        },
+      ],
+    },
   ];
 
   return (

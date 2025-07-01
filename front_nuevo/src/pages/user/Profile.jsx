@@ -16,7 +16,7 @@ const Profile = () => {
     location: 'Bogotá, Colombia',
     bio: 'Amante de la naturaleza y los viajes.',
     joinDate: 'Marzo 2025',
-    totalReservations: 5
+    totalReservations: 5,
   });
 
   const handleSave = async () => {
@@ -28,7 +28,7 @@ const Profile = () => {
         email: profileData.email,
         telefono: profileData.telefono,
         documento_identidad: profileData.documento_identidad,
-        rol: user?.rol || 'client'
+        rol: user?.rol || 'client',
       };
       // Si el usuario está cambiando la contraseña, agregarla aquí (puedes agregar un campo extra en el formulario si lo deseas)
       // if (profileData.password) updatedUser.password = profileData.password;
@@ -36,7 +36,7 @@ const Profile = () => {
       const response = await fetch(`http://localhost:8000/usuarios/${user.id_cliente}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedUser)
+        body: JSON.stringify(updatedUser),
       });
       if (!response.ok) {
         const data = await response.json();

@@ -6,17 +6,20 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint .",
+    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
+    "format:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "preview": "vite preview"
   },
   "dependencies": {
+    "axios": "^1.6.7",
+    "date-fns": "^3.6.0",
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
+    "react-datepicker": "^6.1.0",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.22.3",
-    "react-datepicker": "^6.1.0",
-    "date-fns": "^3.6.0",
-    "axios": "^1.6.7",
     "recharts": "^2.12.2"
   },
   "devDependencies": {
@@ -24,10 +27,16 @@
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.18",
     "eslint": "^9.9.1",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-prettier": "^5.5.1",
+    "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.11",
     "globals": "^15.9.0",
     "postcss": "^8.4.35",
+    "prettier": "^3.6.2",
     "tailwindcss": "^3.4.1",
     "vite": "^5.4.2"
   }

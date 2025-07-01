@@ -68,7 +68,7 @@ const EditSpace = () => {
         tipo: form.tipo.trim() || undefined,
         descripcion: form.descripcion.trim() || undefined,
         estado: form.estado.trim() || undefined,
-        politicas: form.politicas.trim() || undefined
+        politicas: form.politicas.trim() || undefined,
       };
       
       // Convertir capacidad a número si existe
@@ -112,7 +112,7 @@ const EditSpace = () => {
       
       // Eliminar campos con valores undefined
       payload = Object.fromEntries(
-        Object.entries(payload).filter(([_, value]) => value !== undefined)
+        Object.entries(payload).filter(([_, value]) => value !== undefined),
       );
       
       console.log('Datos preparados para enviar:', payload);

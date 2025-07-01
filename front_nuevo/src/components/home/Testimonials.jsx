@@ -7,7 +7,7 @@ const Testimonials = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    message: ''
+    message: '',
   });
   const [loading, setLoading] = useState(false);
 
@@ -28,7 +28,7 @@ const Testimonials = () => {
       await chatService.enviarMensaje({
         id_conversacion,
         remitente: 'cliente',
-        mensaje: formData.message
+        mensaje: formData.message,
       });
       setFormData({ name: '', email: '', message: '' });
       alert('Mensaje enviado correctamente.');
@@ -41,28 +41,28 @@ const Testimonials = () => {
   const testimonials = [
     {
       id: 1,
-      name: "María Rodríguez",
-      date: "Marzo 2025",
+      name: 'María Rodríguez',
+      date: 'Marzo 2025',
       rating: 5,
-      comment: "Nuestra estancia en la finca fue mágica. La tranquilidad, el contacto con la naturaleza y las instalaciones superaron nuestras expectativas.",
-      avatar: "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg"
+      comment: 'Nuestra estancia en la finca fue mágica. La tranquilidad, el contacto con la naturaleza y las instalaciones superaron nuestras expectativas.',
+      avatar: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
     },
     {
       id: 2,
-      name: "Juan Gómez",
-      date: "Febrero 2025",
+      name: 'Juan Gómez',
+      date: 'Febrero 2025',
       rating: 4,
-      comment: "Lugar ideal para desconectar. La cabaña es acogedora y la chimenea le da un toque especial en las noches frías.",
-      avatar: "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg"
+      comment: 'Lugar ideal para desconectar. La cabaña es acogedora y la chimenea le da un toque especial en las noches frías.',
+      avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
     },
     {
       id: 3,
-      name: "Ana Martínez",
-      date: "Enero 2025",
+      name: 'Ana Martínez',
+      date: 'Enero 2025',
       rating: 5,
-      comment: "Celebramos el cumpleaños de mi esposo y fue perfecto. Los niños disfrutaron del espacio al aire libre y nosotros de la tranquilidad.",
-      avatar: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg"
-    }
+      comment: 'Celebramos el cumpleaños de mi esposo y fue perfecto. Los niños disfrutaron del espacio al aire libre y nosotros de la tranquilidad.',
+      avatar: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg',
+    },
   ];
 
   return (

@@ -1,0 +1,11 @@
+exclude_dirs:
+  - tests
+  - venv
+  - env
+  - .venv
+  - .env
+  - migrations
+
+skips:
+  - B101  # Test for use of assert
+  - B601  # paramiko calls

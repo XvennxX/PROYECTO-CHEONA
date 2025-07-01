@@ -5,24 +5,24 @@ const Features = () => {
   const features = [
     {
       icon: <Mountain className="w-16 h-16 text-accent" />,
-      title: "Vista Panorámica",
-      description: "Paisajes espectaculares"
+      title: 'Vista Panorámica',
+      description: 'Paisajes espectaculares',
     },
     {
       icon: <Wifi className="w-16 h-16 text-accent" />,
-      title: "WiFi Gratuito",
-      description: "Conectividad total"
+      title: 'WiFi Gratuito',
+      description: 'Conectividad total',
     },
     {
       icon: <UtensilsCrossed className="w-16 h-16 text-accent" />,
-      title: "Restaurante",
-      description: "Gastronomía local"
+      title: 'Restaurante',
+      description: 'Gastronomía local',
     },
     {
       icon: <Users className="w-16 h-16 text-accent" />,
-      title: "Eventos",
-      description: "Capacidad 100 personas"
-    }
+      title: 'Eventos',
+      description: 'Capacidad 100 personas',
+    },
   ];
 
   return (

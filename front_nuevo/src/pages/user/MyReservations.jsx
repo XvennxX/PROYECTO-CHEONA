@@ -39,15 +39,15 @@ const MyReservations = () => {
   }, [user]);
 
   const statusStyles = {
-    confirmed: "bg-green-100 text-green-800",
-    pending: "bg-yellow-100 text-yellow-800",
-    completed: "bg-blue-100 text-blue-800"
+    confirmed: 'bg-green-100 text-green-800',
+    pending: 'bg-yellow-100 text-yellow-800',
+    completed: 'bg-blue-100 text-blue-800',
   };
 
   const statusText = {
-    confirmed: "Confirmada",
-    pending: "Pendiente",
-    completed: "Completada"
+    confirmed: 'Confirmada',
+    pending: 'Pendiente',
+    completed: 'Completada',
   };
 
   // Filtrado simple (puedes mejorar según los datos reales)
@@ -64,7 +64,7 @@ const MyReservations = () => {
   // Manejo de edición
   const openEditModal = async (reservation) => {
     // Cargar fechas ocupadas del alojamiento
-    let idAlojamiento = reservation.id_alojamiento || reservation.idAlojamiento;
+    const idAlojamiento = reservation.id_alojamiento || reservation.idAlojamiento;
     if (!idAlojamiento && reservation.id_alojamiento !== 0) {
       // Si no está el campo, no cargar fechas
       setReservedRanges([]);
@@ -79,7 +79,7 @@ const MyReservations = () => {
     // Inicializar el rango editable con las fechas actuales
     setEditDateRange([
       reservation.fecha_inicio ? new Date(reservation.fecha_inicio) : null,
-      reservation.fecha_fin ? new Date(reservation.fecha_fin) : null
+      reservation.fecha_fin ? new Date(reservation.fecha_fin) : null,
     ]);
     setEditModal({ open: true, reservation: { ...reservation }, saving: false, error: null });
   };
@@ -100,7 +100,7 @@ const MyReservations = () => {
       if (end) data.fecha_fin = end.toISOString().slice(0, 10);
       if (cantidad_personas) data.cantidad_personas = Number(cantidad_personas);
       Object.keys(data).forEach(key => {
-        if (data[key] === undefined || data[key] === null || data[key] === "") {
+        if (data[key] === undefined || data[key] === null || data[key] === '') {
           delete data[key];
         }
       });
@@ -133,7 +133,7 @@ const MyReservations = () => {
   function getAllReservedDays(ranges) {
     const days = [];
     ranges.forEach(({ start, end }) => {
-      let current = new Date(start);
+      const current = new Date(start);
       const last = new Date(end);
       while (current <= last) {
         days.push(new Date(current));
