@@ -48,7 +48,7 @@ docker-compose up --build -d
 - **Frontend (React)**: http://localhost:3000
 - **Backend API**: http://localhost:8000
 - **Documentación API**: http://localhost:8000/docs
-- **Base de datos MySQL**: localhost:3306
+- **Base de datos MySQL**: localhost:3307 (puerto externo cambiado para evitar conflictos)
 
 ## 👥 Usuarios de Prueba
 
@@ -253,6 +253,51 @@ docker-compose logs -f backend
 # Ver logs solo de la base de datos
 docker-compose logs -f db
 ```
+
+### ❌ Error 404 de Nginx en el Frontend
+Si ves errores 404 al navegar entre páginas de React (como al acceder al dashboard de administrador):
+
+**Causa**: Configuración de Nginx incorrecta para aplicaciones React con enrutamiento del lado del cliente.
+
+**Solución implementada**: Se corrigió el archivo `nginx.conf` con:
+```nginx
+# Manejo correcto de rutas de React Router
+try_files $uri $uri/ /index.html;
+```
+
+### ❌ Puerto 3306 de MySQL ocupado
+Si ves errores como "port is already allocated":
+
+**Causa**: Otra instancia de MySQL está usando el puerto 3306.
+
+**Solución implementada**: 
+- Cambiado el puerto externo de MySQL a 3307 en `docker-compose.yml`
+- Actualizada la documentación para reflejar el cambio
+- El puerto interno del contenedor sigue siendo 3306
+
+```bash
+# Verificar qué está usando el puerto 3306
+netstat -an | findstr :3306
+
+# Conectar a MySQL desde el host
+mysql -h localhost -P 3307 -u cheona -p
+```
+
+## 🔧 Correcciones Recientes
+
+### ✅ Configuración de Nginx Corregida
+- Agregada configuración completa de Nginx para manejo de rutas de React
+- Implementado `try_files` para evitar errores 404 en navegación SPA
+- Agregadas cabeceras de seguridad y configuración de caché
+
+### ✅ Puerto de MySQL Cambiado
+- Puerto externo cambiado de 3306 a 3307 para evitar conflictos
+- Archivos de entorno actualizados con documentación del cambio
+- Verificado que el backend se conecta correctamente al puerto interno
+
+### ✅ Dockerfile del Frontend Mejorado
+- Agregada copia de `nginx.conf` al contenedor
+- Optimizada configuración para servir archivos estáticos
 
 ## 📞 Soporte
 
