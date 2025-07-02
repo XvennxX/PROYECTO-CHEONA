@@ -22,6 +22,8 @@ ENV/
 back_cheona_nuevo/.env
 front_nuevo/.env
 !.env.example
+!back_cheona_nuevo/.env.example
+!front_nuevo/.env.example
 
 # Archivos temporales del sistema
 .DS_Store

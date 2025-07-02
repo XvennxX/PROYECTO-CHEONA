@@ -24,6 +24,24 @@ if [ ! -f ".env" ]; then
 else
     echo "📄 Archivo .env ya existe"
 fi
+
+# Crear archivo .env para el backend si no existe
+if [ ! -f "back_cheona_nuevo/.env" ]; then
+    echo "📄 Creando archivo .env para el backend..."
+    cp back_cheona_nuevo/.env.example back_cheona_nuevo/.env
+    echo "✅ Archivo .env del backend creado"
+else
+    echo "📄 Archivo .env del backend ya existe"
+fi
+
+# Crear archivo .env para el frontend si no existe
+if [ ! -f "front_nuevo/.env" ]; then
+    echo "📄 Creando archivo .env para el frontend..."
+    cp front_nuevo/.env.example front_nuevo/.env
+    echo "✅ Archivo .env del frontend creado"
+else
+    echo "📄 Archivo .env del frontend ya existe"
+fi
 echo ""
 
 echo "🔨 Construyendo e iniciando contenedores..."

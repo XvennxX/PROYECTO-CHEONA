@@ -25,6 +25,24 @@ if not exist ".env" (
 ) else (
     echo 📄 Archivo .env ya existe
 )
+
+REM Crear archivo .env para el backend si no existe
+if not exist "back_cheona_nuevo\.env" (
+    echo 📄 Creando archivo .env para el backend...
+    copy back_cheona_nuevo\.env.example back_cheona_nuevo\.env >nul
+    echo ✅ Archivo .env del backend creado
+) else (
+    echo 📄 Archivo .env del backend ya existe
+)
+
+REM Crear archivo .env para el frontend si no existe
+if not exist "front_nuevo\.env" (
+    echo 📄 Creando archivo .env para el frontend...
+    copy front_nuevo\.env.example front_nuevo\.env >nul
+    echo ✅ Archivo .env del frontend creado
+) else (
+    echo 📄 Archivo .env del frontend ya existe
+)
 echo.
 
 echo 🔨 Construyendo e iniciando contenedores...
