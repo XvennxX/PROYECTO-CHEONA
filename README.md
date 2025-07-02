@@ -188,4 +188,4 @@ Para problemas o consultas, contacta al equipo de desarrollo.
 
 ---
 
-**Desarrollado con ❤️ para Finca Cheona**
+**Desarrollado con ❤️ para Finca Cheonaa**
