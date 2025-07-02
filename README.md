@@ -186,7 +186,7 @@ setup.bat
 ./setup.sh
 ```
 
-O crea manualmente los archivos `.env`:
+O crea manualmente los archivoos `.env`:
 ```bash
 cp .env.example .env
 cp back_cheona_nuevo/.env.example back_cheona_nuevo/.env  
