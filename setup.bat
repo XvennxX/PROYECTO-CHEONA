@@ -45,6 +45,10 @@ if not exist "front_nuevo\.env" (
 )
 echo.
 
+echo 🔧 Configurando terminaciones de línea Unix para archivos shell...
+powershell -Command "(Get-Content back_cheona_nuevo\start.sh -Raw) -replace \"`r`n\", \"`n\" | Set-Content back_cheona_nuevo\start.sh -NoNewline"
+echo ✅ Terminaciones de línea corregidas
+
 echo 🔨 Construyendo e iniciando contenedores...
 docker-compose down --remove-orphans
 docker-compose up --build -d

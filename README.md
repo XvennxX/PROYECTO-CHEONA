@@ -193,8 +193,31 @@ cp back_cheona_nuevo/.env.example back_cheona_nuevo/.env
 cp front_nuevo/.env.example front_nuevo/.env
 ```
 
-### ⚠️ Warning: "attribute version is obsolete"
-Esta advertencia es normal y no afecta el funcionamiento. Se eliminó la directiva `version` obsoleta del `docker-compose.yml`.
+### ❌ Error: "syntax error near unexpected token" en start.sh
+Si ves errores como:
+```
+start.sh: line 6: syntax error near unexpected token `$'{\r''
+start.sh: line 4: $'\r': command not found
+```
+
+**Causa**: Terminaciones de línea incorrectas (Windows CRLF vs Unix LF)
+
+**Solución automática**: El proyecto incluye `.gitattributes` que debería prevenir esto.
+
+**Solución manual en Windows**:
+```powershell
+# Convertir terminaciones de línea
+cd back_cheona_nuevo
+(Get-Content start.sh -Raw) -replace "`r`n", "`n" | Set-Content start.sh -NoNewline
+```
+
+**Solución manual en Linux/Mac**:
+```bash
+# Convertir terminaciones de línea
+dos2unix back_cheona_nuevo/start.sh
+# O usando sed
+sed -i 's/\r$//' back_cheona_nuevo/start.sh
+```
 
 ### Error de conexión a la base de datos
 El backend ahora incluye un sistema de espera automática para MySQL:

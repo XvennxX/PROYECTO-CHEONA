@@ -44,6 +44,16 @@ else
 fi
 echo ""
 
+echo "🔧 Configurando terminaciones de línea Unix para archivos shell..."
+# Convertir terminaciones de línea si es necesario
+if command -v dos2unix >/dev/null 2>&1; then
+    dos2unix back_cheona_nuevo/start.sh 2>/dev/null || true
+else
+    # Usar sed como fallback
+    sed -i 's/\r$//' back_cheona_nuevo/start.sh 2>/dev/null || true
+fi
+echo "✅ Terminaciones de línea verificadas"
+
 echo "🔨 Construyendo e iniciando contenedores..."
 docker-compose down --remove-orphans
 docker-compose up --build -d
