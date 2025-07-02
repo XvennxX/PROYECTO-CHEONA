@@ -17,16 +17,16 @@ class AlojamientoCreate(AlojamientoBase):
     pass
 
 class AlojamientoUpdate(BaseModel):
-    nombre: Optional[str]
-    estado: Optional[str]
-    capacidad: Optional[int]
-    tipo: Optional[str]
-    descripcion: Optional[str]
-    comodidades: Optional[List[str]]
-    precio_por_noche: Optional[float]
-    imagenes: Optional[List[str]]
-    servicios_adicionales: Optional[List[str]]
-    politicas: Optional[str]
+    nombre: Optional[str] = None
+    estado: Optional[str] = None
+    capacidad: Optional[int] = None
+    tipo: Optional[str] = None
+    descripcion: Optional[str] = None
+    comodidades: Optional[List[str]] = None
+    precio_por_noche: Optional[float] = None
+    imagenes: Optional[List[str]] = None
+    servicios_adicionales: Optional[List[str]] = None
+    politicas: Optional[str] = None
 
 class Alojamiento(AlojamientoBase):
     id: int

@@ -7,11 +7,15 @@ services:
       - "8000:8000"
     volumes:
       - ./back_cheona_nuevo:/app
+      - ./uploads:/app/uploads
     env_file:
       - ./back_cheona_nuevo/.env
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     restart: unless-stopped
+    networks:
+      - cheona-network
 
   frontend:
     build: ./front_nuevo
@@ -21,6 +25,8 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+    networks:
+      - cheona-network
 
   db:
     image: mysql:8.0
@@ -30,11 +36,24 @@ services:
       MYSQL_DATABASE: finca_cheona
       MYSQL_USER: cheona
       MYSQL_PASSWORD: cheona123
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     ports:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
     restart: unless-stopped
+    networks:
+      - cheona-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      timeout: 30s
+      retries: 20
+      interval: 5s
 
 volumes:
   db_data:
+
+networks:
+  cheona-network:
+    driver: bridge

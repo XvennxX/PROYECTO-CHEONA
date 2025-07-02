@@ -1,23 +1,61 @@
 # Node modules
 node_modules/
+*/node_modules/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+
+# Environment variables
+.env
+*/.env
+!.env.example
+
+# Database
+*.db
+*.sqlite3
+
+# Uploads (opcional - quita si quieres versionar las imágenes)
+uploads/*
+!uploads/.gitkeep
+
+# Docker
+.docker/
+.dockerignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
 
 # Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+*.log
+logs/
 
 # Build output
 dist/
 build/
 out/
+front_nuevo/build/
 
-# Environment variables
-.env
-.env.*
-
-# OS files
-.DS_Store
+# Coverage reports
+coverage/
+*.lcov
 Thumbs.db
 
 # IDEs and editors
