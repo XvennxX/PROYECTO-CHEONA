@@ -5,8 +5,7 @@ Sistema completo de reservas para Finca Cheona, desarrollado con **React** (fron
 ## 🚀 Instalación Rápida
 
 ### Requisitos Previos
-- [Docker](https://docs.docker.com/get-docker/)
-- [Docker Compose](https://docs.docker.com/compose/install/)
+- [Docker Desktop](https://docs.docker.com/get-docker/) (incluye Docker Compose)
 - [Git](https://git-scm.com/)
 
 ### 1. Clona el repositorio
@@ -15,9 +14,34 @@ git clone <url-del-repositorio>
 cd PROYECTO-CHEONA
 ```
 
-### 2. Ejecuta el proyecto
+### 2. Ejecuta el setup automático
+
+**En Windows:**
+```batch
+setup.bat
+```
+
+**En Linux/Mac:**
 ```bash
-docker-compose up --build
+chmod +x setup.sh
+./setup.sh
+```
+
+> ⚠️ **Importante**: Usa siempre los scripts de setup. No ejecutes `docker-compose up` directamente, ya que primero necesitas configurar los archivos de entorno.
+
+### Setup Manual (opcional)
+Si prefieres configurar manualmente:
+
+1. Crea los archivos de entorno:
+```bash
+cp .env.example .env
+cp back_cheona_nuevo/.env.example back_cheona_nuevo/.env
+cp front_nuevo/.env.example front_nuevo/.env
+```
+
+2. Inicia los contenedores:
+```bash
+docker-compose up --build -d
 ```
 
 ### 3. Accede a la aplicación
@@ -146,6 +170,31 @@ SECRET_KEY=finca_cheona_secret_key_2025_muy_segura
 - ✅ Reportes y estadísticas
 
 ## 🚨 Resolución de Problemas
+
+### ❌ Error: "env file not found"
+Si ves este error al ejecutar `docker-compose up`:
+```
+env file C:\...\back_cheona_nuevo\.env not found
+```
+
+**Solución**: Siempre usa el script de setup:
+```bash
+# En Windows
+setup.bat
+
+# En Linux/Mac
+./setup.sh
+```
+
+O crea manualmente los archivos `.env`:
+```bash
+cp .env.example .env
+cp back_cheona_nuevo/.env.example back_cheona_nuevo/.env  
+cp front_nuevo/.env.example front_nuevo/.env
+```
+
+### ⚠️ Warning: "attribute version is obsolete"
+Esta advertencia es normal y no afecta el funcionamiento. Se eliminó la directiva `version` obsoleta del `docker-compose.yml`.
 
 ### Error de conexión a la base de datos
 El backend ahora incluye un sistema de espera automática para MySQL:
