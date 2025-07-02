@@ -253,7 +253,7 @@ La siguiente tabla muestra los requisitos funcionales del sistema y su clasifica
 
 ## Licencia
 
-Este proyecto está bajo la licencia MIT.
+Este proyecto está bajo la licencia MIT...
 
 ---
 
