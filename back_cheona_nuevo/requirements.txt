@@ -8,3 +8,9 @@ python-dotenv
 sqlalchemy
 python-multipart
 Pillow
+
+##linters
+
+black
+flake8
+isort
