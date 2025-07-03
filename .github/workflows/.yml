@@ -1,0 +1,35 @@
+name: Run Linters
+
+on: [push, pull_request]
+
+jobs:
+  lint-frontend:
+    name: Lint Frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: front_nuevo
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - run: npm install
+      - run: npm run lint || true  # <- permite errores sin fallar
+      - run: npm run format -- --check || true  # <- permite errores sin fallar
+
+  lint-backend:
+    name: Lint Backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: back_cheona_nuevo
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - run: pip install black flake8 isort
+      - run: black --check . || true  # <- permite errores sin fallar
+      - run: flake8 . || true         # <- permite errores sin fallar
+      - run: isort . --check-only || true  # <- permite errores sin fallar

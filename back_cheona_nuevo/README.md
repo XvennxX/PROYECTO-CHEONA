@@ -1,6 +1,19 @@
-# Backend - Finca Cheona
+# 🔗 Backend - Finca Cheona API
 
-Este proyecto es el backend para el sistema de reservas de Finca Cheona, desarrollado con **FastAPI** y **MySQL**. Proporciona una API RESTful para la gestión de usuarios, autenticación y operaciones básicas relacionadas con clientes.
+Sistema backend robusto para el sistema de reservas de Finca Cheona, desarrollado con **FastAPI** y **MySQL**. Proporciona una API RESTful completa para la gestión de usuarios, autenticación JWT, reservas, alojamientos, mensajería en tiempo real y galería de imágenes.
+
+## 🎯 Características Principales
+
+- **API RESTful** con documentación automática (Swagger/OpenAPI)
+- **Autenticación JWT** con tokens de acceso y refresh
+- **Sistema de roles** (cliente/administrador) con permisos granulares
+- **CRUD completo** para todas las entidades del sistema
+- **Manejo de archivos** para galería de imágenes
+- **Sistema de chat** en tiempo real entre usuarios y administradores
+- **Cálculo dinámico** de precios y disponibilidad
+- **Soft delete** para mantener integridad referencial
+- **Middleware CORS** configurado para desarrollo y producción
+- **Validación robusta** con Pydantic models
 
 ---
 
@@ -31,37 +44,70 @@ Este proyecto es el backend para el sistema de reservas de Finca Cheona, desarro
 
 ---
 
-## Tecnologías
+## 🛠️ Tecnologías y Dependencias
 
-- **Python 3.9+**
-- **FastAPI**
-- **MySQL Connector Python**
-- **Pydantic**
-- **Uvicorn**
-- **python-jose** (para futuras implementaciones de JWT)
+### Core Framework
+- **FastAPI** - Framework web moderno y de alto rendimiento
+- **Uvicorn** - Servidor ASGI para aplicaciones asíncronas
+- **Pydantic** - Validación de datos y serialización
+
+### Base de Datos
+- **MySQL Connector Python** - Conexión nativa con MySQL
+- **Pool de conexiones** - Gestión eficiente de conexiones DB
+
+### Autenticación y Seguridad
+- **python-jose** - Implementación completa de JWT
+- **passlib + bcrypt** - Hashing seguro de contraseñas
+- **python-multipart** - Manejo de formularios multipart
+
+### Utilidades
+- **python-dotenv** - Gestión de variables de entorno
+- **Pillow** - Procesamiento y optimización de imágenes
+- **CORS Middleware** - Configuración de políticas de origen cruzado
 
 ---
 
-## Estructura del Proyecto
+## 📁 Estructura del Proyecto
 
 ```
 back_cheona_nuevo/
 ├── app/
-│   ├── database/           # Conexión a la base de datos
-│   │   └── connection.py
-│   ├── models/             # Modelos Pydantic
-│   │   ├── auth_model.py
-│   │   └── user.py
-│   ├── routes/             # Rutas de la API
-│   │   ├── auth_routes.py
-│   │   └── user.py
-│   ├── services/           # Lógica de negocio
-│   │   ├── auth_service.py
-│   │   └── user_service.py
-│   ├── utils/              # Utilidades (helpers)
-│   └── main.py             # Punto de entrada FastAPI
-├── requirements.txt
-└── README.md
+│   ├── main.py                    # Punto de entrada FastAPI
+│   ├── database/
+│   │   ├── connection.py          # Configuración de conexión MySQL
+│   │   └── models.py              # Modelos de base de datos (si aplica)
+│   ├── models/                    # Modelos Pydantic para validación
+│   │   ├── auth_model.py          # Modelos de autenticación
+│   │   ├── user.py                # Modelos de usuario
+│   │   ├── alojamiento_model.py   # Modelos de alojamientos
+│   │   ├── reservation_model.py   # Modelos de reservas
+│   │   ├── mensaje_models.py      # Modelos del sistema de chat
+│   │   └── galeria_model.py       # Modelos de galería
+│   ├── routes/                    # Endpoints de la API
+│   │   ├── auth_routes.py         # Autenticación y login
+│   │   ├── user.py                # Gestión de usuarios
+│   │   ├── alojamiento_routes.py  # CRUD de alojamientos
+│   │   ├── reservation_routes.py  # Gestión de reservas
+│   │   ├── mensaje_routes.py      # Sistema de mensajería
+│   │   └── galeria_routes.py      # Gestión de galería
+│   ├── services/                  # Lógica de negocio
+│   │   ├── auth_service.py        # Lógica de autenticación
+│   │   ├── user_service.py        # Lógica de usuarios
+│   │   ├── alojamiento_service.py # Lógica de alojamientos
+│   │   ├── reservation_service.py # Lógica de reservas
+│   │   ├── mensaje_service.py     # Lógica de mensajería
+│   │   └── galeria_service.py     # Lógica de galería
+│   ├── utils/                     # Utilidades
+│   │   └── jwt_utils.py           # Utilidades JWT
+│   └── static/                    # Archivos estáticos
+│       └── alojamientos/          # Imágenes de alojamientos
+├── uploads/                       # Archivos subidos
+├── tests/                         # Tests unitarios
+├── requirements.txt               # Dependencias Python
+├── Dockerfile                     # Configuración Docker
+├── start.sh                       # Script de inicio
+├── wait-for-db.py                # Script de espera para MySQL
+└── README.md                      # Documentación
 ```
 
 ---
@@ -155,33 +201,72 @@ La documentación de la API estará disponible en:
 
 ---
 
-## Endpoints Principales
+## 🚀 Endpoints de la API
 
-### Usuarios
+### 🔐 Autenticación
+```http
+POST /api/login                    # Login de usuario
+```
 
-- `GET /usuarios/?id={id}`  
-  Obtener usuario por ID.
+### 👥 Gestión de Usuarios
+```http
+GET    /usuarios/?id={id}          # Obtener usuario por ID
+GET    /usuarios/all               # Listar todos los usuarios (admin)
+POST   /usuarios/                  # Crear nuevo usuario
+PATCH  /usuarios/{id}              # Actualizar usuario
+DELETE /usuarios/{id}              # Soft delete de usuario
+```
 
-- `POST /usuarios/`  
-  Crear usuario nuevo.
+### 🏠 Gestión de Alojamientos
+```http
+GET    /alojamientos/              # Listar todos los alojamientos
+GET    /alojamientos/{id}          # Obtener alojamiento específico
+POST   /alojamientos/              # Crear nuevo alojamiento
+PUT    /alojamientos/{id}          # Actualizar alojamiento completo
+PATCH  /alojamientos/{id}          # Actualizar alojamiento parcial
+DELETE /alojamientos/{id}          # Eliminar alojamiento
+```
 
-- `PATCH /usuarios/{id}`  
-  Actualizar usuario existente.
+### 📅 Sistema de Reservas
+```http
+POST   /reservas/                  # Crear nueva reserva
+GET    /reservas/                  # Listar todas las reservas
+GET    /reservas/usuario/{id}      # Reservas de un usuario específico
+GET    /reservas/admin/full        # Reservas con datos de cliente (admin)
+PATCH  /reservas/{id}              # Actualizar reserva
+DELETE /reservas/{id}              # Cancelar reserva
+POST   /reservas/{id}/confirmar-pago # Confirmar pago de reserva
+GET    /reservas/disponibilidad    # Verificar disponibilidad
+GET    /alojamientos/{id}/fechas-reservadas # Fechas ocupadas
+```
 
-- `DELETE /usuarios/{id}`  
-  Eliminar usuario.
+### 💬 Sistema de Mensajería (Chat)
+```http
+POST   /chat/conversacion          # Crear nueva conversación
+POST   /chat/mensaje               # Enviar mensaje
+GET    /chat/conversaciones        # Listar conversaciones
+GET    /chat/mensajes/{id}         # Obtener mensajes de conversación
+POST   /chat/marcar_leidos/{id}    # Marcar mensajes como leídos
+```
 
-### Autenticación
+### 🖼️ Gestión de Galería
+```http
+POST   /galeria/upload-image       # Subir imagen a galería
+GET    /galeria/images/{tipo}      # Obtener imágenes por tipo
+```
 
-- `POST /api/login`  
-  Login de usuario (requiere email y password).
+### 📄 Documentación
+```http
+GET    /docs                       # Swagger UI (documentación interactiva)
+GET    /redoc                      # ReDoc (documentación alternativa)
+GET    /openapi.json               # Schema OpenAPI
+```
 
 ---
 
-## Modelos de Datos
+## 📊 Modelos de Datos Principales
 
-### User
-
+### 👤 Usuario (User)
 ```python
 class User(BaseModel):
     nombre: str
@@ -190,23 +275,86 @@ class User(BaseModel):
     telefono: str
     documento_identidad: str
     password: str
+    rol: str = "client"           # client | admin
+    estado: str = "activo"        # activo | inactivo
 ```
 
-### LoginRequest
-
+### 🔐 Autenticación
 ```python
 class LoginRequest(BaseModel):
     email: str
     password: str
+
+class LoginResponse(BaseModel):
+    access_token: str
+    token_type: str
+    user: UserResponse
+
+class UserResponse(BaseModel):
+    id_cliente: int
+    nombre: str
+    apellido: str
+    email: str
+    telefono: str
+    documento_identidad: str
+    rol: str
 ```
 
-### UserResponse
-
+### 🏠 Alojamiento
 ```python
-class UserResponse(BaseModel):
+class Alojamiento(BaseModel):
+    id_alojamiento: int
     nombre: str
-    email: str
-    rol: str
+    descripcion: str
+    capacidad_maxima: int
+    capacidad_minima: int
+    precio_noche: float
+    servicios: str                # JSON string
+    imagenes: str                 # URLs separadas por comas
+    estado: str                   # disponible | no_disponible
+
+class AlojamientoCreate(BaseModel):
+    nombre: str
+    descripcion: str
+    capacidad_maxima: int
+    capacidad_minima: int = 1
+    precio_noche: float
+    servicios: str
+    imagenes: str = ""
+```
+
+### 📅 Reserva
+```python
+class ReservationCreate(BaseModel):
+    id_alojamiento: int
+    id_cliente: int
+    fecha_inicio: str             # YYYY-MM-DD
+    fecha_fin: str                # YYYY-MM-DD
+    numero_huespedes: int
+    precio_total: float
+    estado_reserva: str = "pendiente"
+
+class ReservationResponse(BaseModel):
+    id_reserva: int
+    id_alojamiento: int
+    id_cliente: int
+    fecha_inicio: str
+    fecha_fin: str
+    numero_huespedes: int
+    precio_total: float
+    estado_reserva: str           # pendiente | confirmada | cancelada
+    fecha_creacion: str
+```
+
+### 💬 Mensajería
+```python
+class ConversacionCreate(BaseModel):
+    id_usuario_cliente: int
+
+class MensajeCreate(BaseModel):
+    id_conversacion: int
+    remitente: str                # client | admin
+    mensaje: str
 ```
 
 ---
