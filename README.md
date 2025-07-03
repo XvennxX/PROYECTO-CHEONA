@@ -1,6 +1,16 @@
 # 🏡 Finca Cheona - Sistema de Reservas
 
-Sistema completo de reservas para Finca Cheona, desarrollado con **React** (frontend) y **FastAPI** (backend), utilizando **MySQL** como base de datos.
+Sistema completo de reservas para Finca Cheona, desarrollado con **React** (frontend) y **FastAPI** (backend), utilizando **MySQL** como base de datos. Incluye gestión completa de alojamientos, reservas, usuarios, sistema de chat en tiempo real y panel administrativo avanzado.
+
+## 🎯 Características Principales
+
+- **Sistema de Reservas Completo**: Gestión de reservas con verificación de disponibilidad en tiempo real
+- **Panel Administrativo**: Dashboard con estadísticas, gestión de reservas y usuarios
+- **Sistema de Chat**: Comunicación en tiempo real entre clientes y administradores
+- **Gestión de Alojamientos**: CRUD completo de espacios con galería de imágenes
+- **Autenticación JWT**: Sistema seguro de autenticación con roles de usuario
+- **Responsive Design**: Interfaz adaptativa para dispositivos móviles y desktop
+- **API RESTful**: Backend robusto con documentación automática (Swagger)
 
 ## 🚀 Instalación Rápida
 
@@ -44,11 +54,30 @@ cp front_nuevo/.env.example front_nuevo/.env
 docker-compose up --build -d
 ```
 
-### 3. Accede a la aplicación
+## 🔗 URLs de Acceso
+
 - **Frontend (React)**: http://localhost:3000
 - **Backend API**: http://localhost:8000
 - **Documentación API**: http://localhost:8000/docs
-- **Base de datos MySQL**: localhost:3307 (puerto externo cambiado para evitar conflictos)
+- **Base de datos MySQL**: localhost:3307 (puerto externo)
+
+## 🏗️ Arquitectura del Sistema
+
+```
+┌─────────────────┐    HTTP/REST    ┌─────────────────┐
+│   Frontend      │ ◄─────────────► │   Backend       │
+│   (React)       │                 │   (FastAPI)     │
+│   Port: 3000    │                 │   Port: 8000    │
+└─────────────────┘                 └─────────────────┘
+                                            │
+                                    Connection Pool
+                                            ▼
+                                    ┌─────────────────┐
+                                    │   Database      │
+                                    │   (MySQL)       │
+                                    │   Port: 3307    │
+                                    └─────────────────┘
+```
 
 ## 👥 Usuarios de Prueba
 
@@ -62,15 +91,23 @@ docker-compose up --build -d
 
 ## 🏠 Alojamientos Disponibles
 
-1. **Finca completa** (15 personas) - $90,000/noche
-   - Zona de fogata, piscina con jacuzzi, BBQ, 4 habitaciones
-   - Mínimo 8 personas
+### 🏘️ Finca Completa
+- **Capacidad**: 15 personas (mínimo 8)
+- **Precio**: $90,000 COP/noche
+- **Servicios**: Zona de fogata, piscina con jacuzzi, BBQ, 4 habitaciones
+- **Ideal para**: Grupos grandes, celebraciones familiares
 
-2. **Cabaña Miyacure** (2 personas) - $300,000/noche
-   - Jacuzzi privado, balcón exterior, zona de cocina
+### 🏕️ Cabaña Miyacure
+- **Capacidad**: 2 personas
+- **Precio**: $300,000 COP/noche
+- **Servicios**: Jacuzzi privado, balcón exterior, zona de cocina
+- **Ideal para**: Parejas, escapadas románticas
 
-3. **Glamping Rústico** (2 personas) - $250,000/noche
-   - Jacuzzi privado, experiencia camping de lujo
+### ⛺ Glamping Rústico
+- **Capacidad**: 2 personas
+- **Precio**: $250,000 COP/noche
+- **Servicios**: Jacuzzi privado, experiencia camping de lujo
+- **Ideal para**: Aventureros, contacto con la naturaleza
 
 ## 📁 Estructura del Proyecto
 
@@ -152,22 +189,36 @@ DB_NAME=finca_cheona
 SECRET_KEY=finca_cheona_secret_key_2025_muy_segura
 ```
 
-## 📱 Funcionalidades
+## 📱 Funcionalidades Implementadas
 
 ### Para Clientes
-- ✅ Registro y autenticación
-- ✅ Explorar alojamientos
-- ✅ Realizar reservas
-- ✅ Gestionar perfil
-- ✅ Chat con administradores
-- ✅ Ver historial de reservas
+- ✅ **Registro y autenticación** con JWT
+- ✅ **Explorar alojamientos** con filtros y búsqueda
+- ✅ **Sistema de reservas** con verificación de disponibilidad
+- ✅ **Gestión de perfil** (actualización de datos personales)
+- ✅ **Chat en tiempo real** con administradores
+- ✅ **Historial de reservas** con estados y detalles
+- ✅ **Galería interactiva** de imágenes por tipo de alojamiento
+- ✅ **Cálculo dinámico de precios** según fechas y ocupación
 
 ### Para Administradores
-- ✅ Panel de administración
-- ✅ Gestión de reservas
-- ✅ Gestión de alojamientos
-- ✅ Chat con clientes
-- ✅ Reportes y estadísticas
+- ✅ **Panel de administración** con métricas y estadísticas
+- ✅ **Gestión completa de reservas** (crear, actualizar, cancelar, confirmar pagos)
+- ✅ **Gestión de alojamientos** (CRUD completo con imágenes)
+- ✅ **Gestión de usuarios** con roles y estados
+- ✅ **Sistema de chat** para comunicación con clientes
+- ✅ **Reportes y análisis** (ingresos, ocupación, reservas por mes)
+- ✅ **Galería de imágenes** por categorías (alojamientos, servicios, etc.)
+- ✅ **Dashboard en tiempo real** con indicadores clave
+
+### Características Técnicas
+- 🔐 **Autenticación JWT** con refresh tokens
+- 📊 **API RESTful** con documentación Swagger
+- 🖼️ **Manejo de archivos** para galería de imágenes
+- 💾 **Base de datos MySQL** con relaciones optimizadas
+- 🐳 **Containerización Docker** para fácil despliegue
+- 🔄 **Sistema de estados** para reservas y usuarios
+- 📱 **Diseño responsive** con Tailwind CSS
 
 ## 🚨 Resolución de Problemas
 
@@ -304,5 +355,5 @@ mysql -h localhost -P 3307 -u cheona -p
 Para problemas o consultas, contacta al equipo de desarrollo.
 
 ---
-
+   
 **Desarrollado con ❤️ para Finca Cheonaa**
