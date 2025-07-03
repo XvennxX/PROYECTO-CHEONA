@@ -158,6 +158,213 @@ npm run dev
 ### Base de Datos
 Ejecutar el script `database/init.sql` en tu instancia local de MySQL.
 
+## 🧹 Linters y Formateo de Código
+
+El proyecto incluye herramientas de linting y formateo para mantener la calidad y consistencia del código.
+
+### Frontend (JavaScript/React)
+
+#### ESLint
+Analiza el código JavaScript/React para detectar errores y problemas de estilo.
+
+```bash
+cd front_nuevo
+
+# Verificar errores de linting
+npm run lint
+
+# Corregir automáticamente errores de linting
+npm run lint:fix
+```
+
+#### Prettier
+Formatea automáticamente el código para mantener consistencia de estilo.
+
+```bash
+cd front_nuevo
+
+# Formatear todo el código
+npm run format
+```
+
+### Backend (Python)
+
+#### isort
+Organiza y ordena automáticamente los imports de Python según PEP 8.
+
+```bash
+cd back_cheona_nuevo
+
+# Verificar el orden de imports (solo verificación)
+isort --check-only .
+
+# Corregir automáticamente el orden de imports
+isort .
+
+# Ver qué cambios se aplicarían sin ejecutarlos
+isort --diff .
+```
+
+#### Black (Recomendado)
+Formateador automático de código Python que sigue las mejores prácticas.
+
+```bash
+cd back_cheona_nuevo
+
+# Instalar black
+pip install black
+
+# Verificar formato sin aplicar cambios
+black --check .
+
+# Formatear automáticamente todo el código
+black .
+
+# Mostrar diferencias sin aplicar cambios
+black --diff .
+```
+
+#### Flake8 (Opcional)
+Linter adicional para Python que combina PyFlakes, pycodestyle y McCabe.
+
+```bash
+cd back_cheona_nuevo
+
+# Instalar flake8
+pip install flake8
+
+# Verificar código
+flake8 .
+
+# Verificar con configuración personalizada
+flake8 --max-line-length=88 --extend-ignore=E203,W503 .
+```
+
+### Configuración de Git Hooks (Recomendado)
+
+Para ejecutar linters automáticamente antes de cada commit:
+
+```bash
+# Instalar pre-commit
+pip install pre-commit
+
+# Configurar hooks (crear archivo .pre-commit-config.yaml)
+pre-commit install
+
+# Ejecutar en todos los archivos
+pre-commit run --all-files
+```
+
+### Scripts de Mantenimiento
+
+#### Script completo de formateo (Windows)
+Crea `format-all.bat`:
+```batch
+@echo off
+echo Formateando frontend...
+cd front_nuevo
+call npm run lint:fix
+call npm run format
+cd ..
+
+echo Formateando backend...
+cd back_cheona_nuevo
+isort .
+black .
+cd ..
+
+echo ✅ Formateo completado
+```
+
+#### Script completo de formateo (Linux/Mac)
+Crea `format-all.sh`:
+```bash
+#!/bin/bash
+echo "Formateando frontend..."
+cd front_nuevo
+npm run lint:fix
+npm run format
+cd ..
+
+echo "Formateando backend..."
+cd back_cheona_nuevo
+isort .
+black .
+cd ..
+
+echo "✅ Formateo completado"
+```
+
+### Configuraciones Recomendadas
+
+#### .eslintrc.js (Frontend)
+```javascript
+module.exports = {
+  extends: [
+    'eslint:recommended',
+    '@typescript-eslint/recommended',
+    'plugin:react/recommended',
+    'plugin:react-hooks/recommended'
+  ],
+  rules: {
+    'indent': ['error', 2],
+    'quotes': ['error', 'single'],
+    'semi': ['error', 'always']
+  }
+};
+```
+
+#### pyproject.toml (Backend)
+```toml
+[tool.black]
+line-length = 88
+target-version = ['py39']
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+```
+
+### Comandos Rápidos de Mantenimiento
+
+```bash
+# Formateo completo del proyecto
+# Frontend
+cd front_nuevo && npm run lint:fix && npm run format && cd ..
+
+# Backend  
+cd back_cheona_nuevo && isort . && black . && cd ..
+
+# Verificación sin cambios
+cd front_nuevo && npm run lint && cd ..
+cd back_cheona_nuevo && isort --check-only . && black --check . && cd ..
+```
+
+### Integración con VS Code
+
+Para mejorar la experiencia de desarrollo, instala estas extensiones:
+
+- **ESLint**: Linting en tiempo real para JavaScript/React
+- **Prettier**: Formateo automático al guardar
+- **Python**: Soporte completo para Python
+- **Black Formatter**: Formateo automático de Python
+- **isort**: Organización automática de imports
+
+Configuración recomendada en `settings.json`:
+```json
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true,
+    "source.organizeImports": true
+  },
+  "python.formatting.provider": "black",
+  "python.sortImports.provider": "isort"
+}
+```
+
 ## 🐳 Comandos Docker Útiles
 
 ```bash
